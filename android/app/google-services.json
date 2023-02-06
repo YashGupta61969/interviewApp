@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "78822417565",
+    "project_id": "virtual-interview-e11a3",
+    "storage_bucket": "virtual-interview-e11a3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:78822417565:android:90e2e11e51f8dfed5d2074",
+        "android_client_info": {
+          "package_name": "com.interviewapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "78822417565-3aupihjfbf42t3ekh41dit30pcm3o54r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.interviewapp",
+            "certificate_hash": "4bab2ce21a28e931f35f767d5c718d09a904a886"
+          }
+        },
+        {
+          "client_id": "78822417565-2o31lr2a7d25o6iecp516ei7frngbpdn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBA8_inOPggC87tSOmd3c_SabIcvhgwDRU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "78822417565-2o31lr2a7d25o6iecp516ei7frngbpdn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
