@@ -1,44 +1,71 @@
 import { useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RNCamera } from 'react-native-camera';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Modals from '../components/Modals';
+import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
 
 const Camera = () => {
+  const ref = useRef();
+  const swipeRef = useRef()
+
   const [isRecording, setIsRecording] = useState(false)
-  const ref = useRef()
+  const [modalVisible, setModalVisible] = useState(false)
 
   const startRecording = async () => {
     if (ref) {
       setIsRecording(true)
       const { uri } = await ref.current.recordAsync();
+      ref.current.resumePreview();
+      //  resumePreview
       console.log(uri);
     }
   }
   const stopRecording = () => {
+    console.log('fhdsf')
     setIsRecording(false)
-    ref.current.stopRecording();  
+    ref.current.pausePreview();
+  }
+
+  const onSwipeOpen = (e) => {
+    if (e === 'left') {
+      setModalVisible(true)
+    }
   }
 
   return (
-    <View style={styles.container}>
+    <Swipeable
+      ref={swipeRef}
+      onSwipeableOpen={onSwipeOpen}
+      renderLeftActions={(e) => {
+        return <Text style={{ flex: 1 }}>jifjewejwgghjjykkkjfg</Text>
+      }}
+      renderRightActions={() => <Text style={{ flex: 1 }}>efbhdkjsbhdkjsgbdhskjugbdhs</Text>}
+      containerStyle={{ flex: 1 }}
+      childrenContainerStyle={styles.container}
+    >
+      <Modals modalVisible={modalVisible} setModalVisible={setModalVisible} errorHead={'Redo Question ?'} errorDesc={'Are you sure you want to redo this question'} action={swipeRef.current} />
+
       <RNCamera
+        onTap={stopRecording}
         ref={ref}
-        style={styles.preview}
+        style={{ ...styles.preview }}
         type='front'>
-        <View style={styles.captureContainer}>
+
+        <View style={styles.question}>
           <Text style={{ fontSize: 20 }}>What is The Longest River In The World</Text>
         </View>
-        {isRecording ?
-          <TouchableOpacity style={styles.recordingStopBtn} onPress={stopRecording} >
-            <View style={{ backgroundColor: 'red', width: 40, height: 40, borderRadius: 20 }} />
-          </TouchableOpacity> :
-          <TouchableOpacity style={styles.recordStartBtn} onPress={startRecording} >
-            <View style={{ backgroundColor: 'red', width: 70, height: 70, borderRadius: 35, borderWidth: 2 }} />
+
+        {!isRecording &&
+          <TouchableOpacity style={styles.recordingStopBtn} onPress={startRecording} >
+            {/* <View style={{ backgroundColor: 'red', width: 40, height: 40, borderRadius: 20 }} /> */}
+            <MaterialCommunity name={'pause'} size={80}/>
           </TouchableOpacity>
         }
+
       </RNCamera>
 
-      <View style={styles.space} />
-    </View>
+    </Swipeable>
   );
 }
 
@@ -46,45 +73,31 @@ export default Camera
 
 const styles = StyleSheet.create({
   container: {
-    position: 'relative',
-    flex: 1
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'black',
   },
 
   preview: {
     flex: 1,
-    justifyContent: 'space-between'
+    overflow: 'hidden'
   },
-
-  captureBtn: {
-    backgroundColor: 'red',
+  question: {
     width: '100%',
-    borderRadius: 50
-  },
-  captureContainer: {
-    width: '100%',
+    position: 'absolute',
+    top: 0,
     backgroundColor: 'rgba(0,0,0,0.7)',
     paddingHorizontal: 5,
     paddingVertical: 10
   },
-  recordStartBtn: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'white',
-    borderColor: 'gray',
-    alignSelf: 'center',
-    marginBottom: 20,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
   recordingStopBtn: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderColor: 'white',
-    borderWidth: 8,
+    position: 'absolute',
+    top:'45%',
+    backgroundColor:'rgba(0,0,0,0.2)',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     alignSelf: 'center',
-    marginBottom: 20,
     justifyContent: 'center',
     alignItems: 'center'
   }
