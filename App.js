@@ -2,8 +2,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Camera from './src/screens/Camera';
 import QRReader from './src/screens/QRReader';
+import Camera from './src/screens/Camera';
 import Welcome from './src/screens/Welcome';
 
 const Stack = createNativeStackNavigator();
