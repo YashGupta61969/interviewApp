@@ -2,12 +2,13 @@ import { StyleSheet, Text, View, TouchableOpacity, Linking } from 'react-native'
 import React, { useRef } from 'react'
 import QRCodeScanner from 'react-native-qrcode-scanner'
 
-const QRReader = () => {
+const QRReader = ({ setLink }) => {
     const ref = useRef()
 
     const onSuccess = (e) => {
         const check = e.data.substring(0, 4);
         if (check === 'http') {
+            setLink(e.data)
             Linking
                 .openURL(e.data)
                 .catch(err => console.error('An error occured', err));
@@ -34,11 +35,11 @@ export default QRReader
 const styles = StyleSheet.create({
     page: {
         flex: 1,
-        backgroundColor:'black'
+        backgroundColor: 'black'
     },
-    text:{
-        fontSize:20,
+    text: {
+        fontSize: 20,
         textAlign: 'center',
-        fontWeight:'600'
+        fontWeight: '600'
     }
 })

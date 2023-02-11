@@ -95,9 +95,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.interviewapp"
+    namespace "com.interviewapptest"
     defaultConfig {
-        applicationId "com.interviewapp"
+        applicationId "com.interviewapptest"
          missingDimensionStrategy 'react-native-camera', 'general'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
@@ -156,6 +156,9 @@ dependencies {
     implementation("com.facebook.react:react-android")
 
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.0.0")
+
+    implementation 'com.google.firebase:firebase-dynamic-links-ktx:21.1.0'
+    implementation 'com.google.firebase:firebase-analytics-ktx:21.2.0'
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
