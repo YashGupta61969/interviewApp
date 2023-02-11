@@ -1,24 +1,19 @@
-import { StyleSheet, Text, View, useWindowDimensions, TouchableOpacity, Alert } from 'react-native'
+import { StyleSheet, Text, View, useWindowDimensions, TouchableOpacity } from 'react-native'
 import React, { useState, useRef, useEffect } from 'react'
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
 import Modals from '../components/Modals';
 import { RNCamera } from 'react-native-camera';
-import firestore from '@react-native-firebase/firestore';
-import storage from '@react-native-firebase/storage';
 
-const Camera = ({ link }) => {
+const QuestionScreen = ({ item }) => {
 
     const { width, height } = useWindowDimensions();
     const ref = useRef();
-    const documentId = link.split('data=')[1];
 
     const [video, setVideo] = useState('')
     const [paused, setPaused] = useState(false)
     const [modalVisible, setModalVisible] = useState(false)
     const [loading, setLoading] = useState(true)
     const [isRecording, setIsRecording] = useState(false)
-    const [data, setData] = useState({})
-    const [currentIndex, setCurrentIndex] = useState(0)
 
     const startRecording = async () => {
         setIsRecording(true)
@@ -38,37 +33,11 @@ const Camera = ({ link }) => {
         }
     }
 
-    const submitRecording = async () => {
-        ref.current.stopRecording();
-        setIsRecording(false)
+    useEffect(()=>{
+        return()=>console.log('first')
+    },[])
 
-        const reference = storage().ref(`${data.email}-${currentIndex}`);
-        await reference.putFile(video.replace('file://', ''))
-        const url = await reference.getDownloadURL()
-        console.log(url)
-
-        // await firestore().collection('users').doc(documentId).update({
-
-        // })
-        
-        if (currentIndex + 1 === data.questions.length) {
-            Alert.alert('Completed', 'Your Response Has Been Submitted')
-        } else {
-            setCurrentIndex(prev => prev + 1)
-        }
-    }
-
-    useEffect(() => {
-        fetchData()
-        // return()=>console.log('first')
-    }, [])
-
-    const fetchData = async () => {
-        const data = await firestore().collection('users').doc(documentId).get();
-        setData(data.data())
-    }
-
-    if (data && data.questions) return (
+    return (
         <RNCamera
             onTap={pauseRecording}
             ref={ref}
@@ -76,7 +45,7 @@ const Camera = ({ link }) => {
             type='front'>
 
             <View style={styles.question}>
-                <Text style={{ fontSize: 20 }}>{data.questions[currentIndex].value}</Text>
+                <Text style={{ fontSize: 20 }}>{item.value}</Text>
             </View>
 
             {!isRecording && <TouchableOpacity style={styles.recordingStopBtn} onPress={startRecording} >
@@ -84,14 +53,14 @@ const Camera = ({ link }) => {
             </TouchableOpacity>
             }
 
-            <View style={styles.btns}>
-                <TouchableOpacity style={styles.btn} onPress={() => setModalVisible(true)}>
-                    <Text style={{ fontSize: 17 }}>Redo</Text>
+            {/* <View style={styles.btns}>
+                <TouchableOpacity style={styles.btn} onPress={()=>setModalVisible(true)}>
+                    <Text style={{fontSize:17}}>Redo</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.btn} onPress={submitRecording}>
-                    <Text style={{ fontSize: 17 }}>Next</Text>
+                <TouchableOpacity style={styles.btn} onPress={()=>setModalVisible(true)}>
+                    <Text style={{fontSize:17}}>Next</Text>
                 </TouchableOpacity>
-            </View>
+            </View> */}
 
             <Modals modalVisible={modalVisible} setModalVisible={setModalVisible} errorHead={'Redo Question ?'} errorDesc={'Are you sure you want to redo this question'} />
 
@@ -99,7 +68,7 @@ const Camera = ({ link }) => {
     )
 }
 
-export default Camera
+export default QuestionScreen
 
 const styles = StyleSheet.create({
     container: {
@@ -126,18 +95,18 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    btns: {
-        position: 'absolute',
-        bottom: 20,
-        left: 20,
-        right: 20,
-        flexDirection: 'row',
-        justifyContent: 'space-between'
+    btns:{
+        position:'absolute', 
+        bottom:20, 
+        left:20, 
+        right:20,
+        flexDirection:'row',
+        justifyContent:'space-between'
     },
-    btn: {
-        backgroundColor: 'blue',
-        paddingVertical: 6,
-        paddingHorizontal: 20,
-        borderRadius: 5
+    btn:{
+        backgroundColor:'blue',
+        paddingVertical:6,
+        paddingHorizontal:20,
+        borderRadius:5
     }
 });

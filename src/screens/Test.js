@@ -1,98 +1,73 @@
-import { useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import { RNCamera } from 'react-native-camera';
-import Carousel from 'react-native-snap-carousel';
-import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
+import { useEffect, useRef, useState } from 'react';
+import { Animated, FlatList, Text, useWindowDimensions } from 'react-native';
+import SwiperFlatList from 'react-native-swiper-flatlist';
+import firestore from '@react-native-firebase/firestore';
+import QuestionScreen from './QuestionScreen';
 import Modals from '../components/Modals';
 
-const Test = () => {
+const Test = ({ link }) => {
     const ref = useRef();
-    const cameraRef = useRef()
     const { width, height } = useWindowDimensions();
+    const scrollX = useRef(new Animated.Value(0)).current;
 
-    const [video, setVideo] = useState('')
+    const [data, setData] = useState({})
     const [currentIndex, setCurrentIndex] = useState(0)
-    const [isRecording, setIsRecording] = useState(false)
-    const [paused, setPaused] = useState(false)
+    const [previousIndex, setPreviousIndex] = useState(0)
+    const [isRedo, setIsRedo] = useState(false)
     const [modalVisible, setModalVisible] = useState(false)
 
-    const startRecording = async () => {
-        if (ref) {
-            // setIsRecording(true)
-            if (paused) {
-                setPaused(false)
-                return ref.current.resumePreview();
-            }
-            const { uri } = await ref.current.recordAsync();
-            setVideo(uri)
-        }
+    useEffect(() => {
+        fetchData()
+    }, [])  
+    
+    const fetchData = async ()=>{
+       const documentId = link.split('data=')[1];
+       const data = await firestore().collection('users').doc(documentId).get();
+       setData(data.data())
     }
 
-    const pauseRecording = () => {
-        setIsRecording(false)
-        setPaused(true)
-        ref.current.pausePreview();
-    }
+    console.log(currentIndex + 1)
 
-    const renderItem = ({ item }) => {
-        return <RNCamera
-            // onTap={stopRecording}
-            ref={cameraRef}
-            style={{ width, height }}
-            type='front'>
+    if (data && data.questions) {
+        return (
+            <>
+                <SwiperFlatList
+                    ref={ref}
+                    data={data.questions}
+                    renderItem={({ item }) => <QuestionScreen item={item} />}
+                    centerContent
+                    // scrollEnabled={false}
+                    onChangeIndex={({ prevIndex, index }) => {
+                        // On Next
+                        if (index > currentIndex) {
 
-            <View style={styles.question}>
-                <Text style={{ fontSize: 20 }}>{item}</Text>
-            </View>
+                        }
 
-            {!isRecording && <TouchableOpacity style={styles.recordingStopBtn} onPress={startRecording} >
-                <MaterialCommunity name={'pause'} size={80} />
-            </TouchableOpacity>
-            }
+                        // On Prev
+                        if (prevIndex > previousIndex) {
+                            setModalVisible(true);
+                        }
+                        setCurrentIndex(index)
+                        setPreviousIndex(prevIndex)
+                    }}
+                    style={{ height, width }}
+                    snapToAlignment={'end'}
+                />
 
-            <Modals modalVisible={modalVisible} setModalVisible={setModalVisible} errorHead={'Redo Question ?'} errorDesc={'Are you sure you want to redo this question'} />
-
-        </RNCamera>
+                <Modals modalVisible={modalVisible} setModalVisible={setModalVisible} errorHead={'Redo Question ?'} errorDesc={'Are you sure you want to redo this question'} />
+            </>
+        )
     }
 
     return (
-        <Carousel
-            ref={ref}
-            data={['Who Are You', 'What Are You', 'Why Are You', 'How Are You', 'When Are You']}
-            renderItem={renderItem}
-            sliderWidth={width}
-            itemWidth={height}
-            swipeThreshold={50}
-            lockScrollWhileSnapping
-        />
+        <Text>No Questions Found</Text>
     );
 }
 
 export default Test
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        // backgroundColor: 'black',
-    },
-    question: {
-        width: '100%',
-        position: 'absolute',
-        top: 0,
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        paddingHorizontal: 5,
-        paddingVertical: 10
-    },
-    recordingStopBtn: {
-        position: 'absolute',
-        top: '45%',
-        backgroundColor: 'rgba(0,0,0,0.2)',
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        alignSelf: 'center',
-        justifyContent: 'center',
-        alignItems: 'center'
-    }
-});
+// if (loading) {
+//     return <View style={{width,height, justifyContent: 'center', alignItems: 'center' }}>
+//       <ActivityIndicator size={'large'} />
+//     </View>
+//   }

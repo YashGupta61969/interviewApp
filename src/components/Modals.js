@@ -1,7 +1,7 @@
 import { Modal, StyleSheet, Text, useWindowDimensions, View, TouchableOpacity } from 'react-native'
 import React from 'react'
 
-const Modals = ({ modalVisible, setModalVisible, errorHead, errorDesc, action }) => {
+const Modals = ({ modalVisible, setModalVisible, errorHead, errorDesc }) => {
     const { width, height } = useWindowDimensions();
 
     return (
@@ -25,7 +25,6 @@ const Modals = ({ modalVisible, setModalVisible, errorHead, errorDesc, action })
                         </TouchableOpacity>
 
                         <TouchableOpacity style={{ paddingVertical: 8 }} onPress={() => {
-                            action.close()
                             setModalVisible(false)
                         }}>
                             <Text style={{color:'#006ee6'}}>Cancel</Text>
