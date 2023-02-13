@@ -1,10 +1,10 @@
-import { StyleSheet, Text, View, useWindowDimensions, TouchableOpacity, Alert } from 'react-native'
+import { StyleSheet, Text, View, useWindowDimensions, TouchableOpacity, Alert, Platform } from 'react-native'
 import React, { useState, useRef, useEffect } from 'react'
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
 import Modals from '../components/Modals';
 import { RNCamera } from 'react-native-camera';
 import firestore from '@react-native-firebase/firestore';
-import storage from '@react-native-firebase/storage';
+import Uploaded from '../components/Uploaded';
 
 const Camera = ({ link }) => {
 
@@ -12,7 +12,8 @@ const Camera = ({ link }) => {
     const ref = useRef();
     const documentId = link.split('data=')[1];
 
-    const [video, setVideo] = useState('')
+    const [uploaded, setUploaded] = useState(false)
+    const [visible, setVisible] = useState(false)
     const [paused, setPaused] = useState(false)
     const [modalVisible, setModalVisible] = useState(false)
     const [loading, setLoading] = useState(true)
@@ -20,14 +21,56 @@ const Camera = ({ link }) => {
     const [data, setData] = useState({})
     const [currentIndex, setCurrentIndex] = useState(0)
 
+    useEffect(() => {
+        firestore().collection('users').doc(documentId).get().then((data) => setData(data.data()))
+    }, [])
+
+    console.log(data)
+
     const startRecording = async () => {
         setIsRecording(true)
         if (paused) {
             setPaused(false)
+            setIsRecording(true)
             return ref.current.resumePreview();
         }
-        const { uri } = await ref.current.recordAsync();
-        setVideo(uri)
+        try {
+            const { uri } = await ref.current.recordAsync();
+
+            if (uri) {
+                setVisible(true)
+                const form = new FormData()
+
+                form.append('documentId',documentId)
+
+                form.append('video', {
+                    name: `${data?.questions?.[currentIndex]?.value}-${data?.questions?.[currentIndex]?.id}`,
+                    uri: uri,
+                    type: 'video/mp4'
+                })
+
+                const response = await fetch('http://142.93.219.133/video-app/', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                    body: form
+                });
+
+                const data = await response.json()
+                setUploaded(true)
+                setVisible(false)
+
+                if (currentIndex + 1 === data?.questions?.length) {
+                    Alert.alert('Completed', 'Your Response Has Been Submitted')
+                } else {
+                    setCurrentIndex(prev => prev + 1)
+                }
+            }
+        } catch (error) {
+            console.log('error posting', error)
+            setVisible(false)
+        }
     }
 
     const pauseRecording = () => {
@@ -38,34 +81,16 @@ const Camera = ({ link }) => {
         }
     }
 
+
     const submitRecording = async () => {
-        ref.current.stopRecording();
-        setIsRecording(false)
-
-        const reference = storage().ref(`${data.email}-${currentIndex}`);
-        await reference.putFile(video.replace('file://', ''))
-        const url = await reference.getDownloadURL()
-        console.log(url)
-
-        // await firestore().collection('users').doc(documentId).update({
-
-        // })
-        
-        if (currentIndex + 1 === data.questions.length) {
-            Alert.alert('Completed', 'Your Response Has Been Submitted')
-        } else {
-            setCurrentIndex(prev => prev + 1)
-        }
+        await ref.current.stopRecording();
+        setIsRecording(false);
     }
 
-    useEffect(() => {
-        fetchData()
-        // return()=>console.log('first')
-    }, [])
 
-    const fetchData = async () => {
-        const data = await firestore().collection('users').doc(documentId).get();
-        setData(data.data())
+    const redoQuestion = () => {
+        ref.current.stopRecording();
+        Alert.alert('Redoing A Question', 'Tap Okay To Continue');
     }
 
     if (data && data.questions) return (
@@ -85,7 +110,7 @@ const Camera = ({ link }) => {
             }
 
             <View style={styles.btns}>
-                <TouchableOpacity style={styles.btn} onPress={() => setModalVisible(true)}>
+                <TouchableOpacity style={styles.btn} onPress={redoQuestion}>
                     <Text style={{ fontSize: 17 }}>Redo</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.btn} onPress={submitRecording}>
@@ -95,6 +120,7 @@ const Camera = ({ link }) => {
 
             <Modals modalVisible={modalVisible} setModalVisible={setModalVisible} errorHead={'Redo Question ?'} errorDesc={'Are you sure you want to redo this question'} />
 
+            <Uploaded setVisible={setVisible} visible={visible} uploaded={uploaded} />
         </RNCamera>
     )
 }
