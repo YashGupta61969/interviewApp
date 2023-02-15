@@ -4,93 +4,104 @@ import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
 import Modals from '../components/Modals';
 import { RNCamera } from 'react-native-camera';
 import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 import Uploaded from '../components/Uploaded';
 
-const Camera = ({ link }) => {
+const Camera = ({ route, navigation }) => {
 
     const { width, height } = useWindowDimensions();
     const ref = useRef();
+    const { link } = route.params;
     const documentId = link.split('data=')[1];
-
+    
     const [uploaded, setUploaded] = useState(false)
     const [visible, setVisible] = useState(false)
     const [paused, setPaused] = useState(false)
     const [modalVisible, setModalVisible] = useState(false)
-    const [loading, setLoading] = useState(true)
     const [isRecording, setIsRecording] = useState(false)
     const [data, setData] = useState({})
     const [currentIndex, setCurrentIndex] = useState(0)
+    const currentQuestion = data && data.questions && data.questions[currentIndex];
 
+    // Fetches all the data from firebase db
     useEffect(() => {
-        firestore().collection('users').doc(documentId).get().then((data) => setData(data.data()))
+        firestore().collection('users').doc(documentId).get().then((res) => {
+            setData(res.data())
+        })
     }, [])
 
-    console.log(data)
-
+    // Starts Recording Video
     const startRecording = async () => {
         setIsRecording(true)
         if (paused) {
             setPaused(false)
             setIsRecording(true)
-            return ref.current.resumePreview();
+            return await ref.current.resumePreview();
         }
         try {
             const { uri } = await ref.current.recordAsync();
 
             if (uri) {
                 setVisible(true)
-                const form = new FormData()
 
-                form.append('documentId',documentId)
+                const reference = storage().ref(`${currentQuestion.value.split(' ').join('-')}-${currentQuestion.id}`);
 
-                form.append('video', {
-                    name: `${data?.questions?.[currentIndex]?.value}-${data?.questions?.[currentIndex]?.id}`,
-                    uri: uri,
-                    type: 'video/mp4'
+                await reference.putFile(uri);
+
+                const url = await reference.getDownloadURL();
+
+                await firestore().collection('users').doc(data.id).update({
+                    questions: {
+                        ...data.questions,
+                        [currentQuestion.id]: {
+                            ...data.questions[currentQuestion.id],
+                            answer: url
+                        }
+                    }
                 })
 
-                const response = await fetch('http://142.93.219.133/video-app/', {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                    },
-                    body: form
-                });
-
-                const data = await response.json()
                 setUploaded(true)
                 setVisible(false)
 
-                if (currentIndex + 1 === data?.questions?.length) {
+                if (currentIndex + 1 === Object.values(data.questions).length) {
                     Alert.alert('Completed', 'Your Response Has Been Submitted')
-                } else {
-                    setCurrentIndex(prev => prev + 1)
+                    navigation.navigate('Welcome',{link:''})
                 }
             }
         } catch (error) {
-            console.log('error posting', error)
+            console.log(error)
             setVisible(false)
         }
     }
 
-    const pauseRecording = () => {
+    // Pauses Recording
+    const pauseRecording = async () => {
         if (isRecording) {
             setIsRecording(false)
             setPaused(true)
-            ref.current.pausePreview();
+            await ref.current.pausePreview();
         }
     }
 
-
+    // Stops Recording
     const submitRecording = async () => {
+        setUploaded(false)
         await ref.current.stopRecording();
         setIsRecording(false);
     }
 
-
+    // Redo Question
     const redoQuestion = () => {
         ref.current.stopRecording();
         Alert.alert('Redoing A Question', 'Tap Okay To Continue');
+    }
+
+    if (data && data.questions && currentQuestion.answer) {
+        if (currentIndex + 1 === Object.values(data.questions).length) {
+            Alert.alert('You Have Completed Your Interview.')
+            return navigation.navigate('QR')
+        }
+        setCurrentIndex(prev => prev + 1)
     }
 
     if (data && data.questions) return (
@@ -101,7 +112,7 @@ const Camera = ({ link }) => {
             type='front'>
 
             <View style={styles.question}>
-                <Text style={{ fontSize: 20 }}>{data.questions[currentIndex].value}</Text>
+                <Text style={{ fontSize: 20 }}>{currentQuestion.value}</Text>
             </View>
 
             {!isRecording && <TouchableOpacity style={styles.recordingStopBtn} onPress={startRecording} >
@@ -109,14 +120,14 @@ const Camera = ({ link }) => {
             </TouchableOpacity>
             }
 
-            <View style={styles.btns}>
+            {/* <View style={styles.btns}>
                 <TouchableOpacity style={styles.btn} onPress={redoQuestion}>
                     <Text style={{ fontSize: 17 }}>Redo</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.btn} onPress={submitRecording}>
                     <Text style={{ fontSize: 17 }}>Next</Text>
                 </TouchableOpacity>
-            </View>
+            </View> */}
 
             <Modals modalVisible={modalVisible} setModalVisible={setModalVisible} errorHead={'Redo Question ?'} errorDesc={'Are you sure you want to redo this question'} />
 
@@ -131,7 +142,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        // backgroundColor: 'black',
     },
     question: {
         width: '100%',
