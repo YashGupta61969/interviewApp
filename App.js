@@ -2,74 +2,81 @@ import React, { useEffect, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import QRReader from './src/screens/QRReader';
 import Camera from './src/screens/Camera';
-import Test from './src/screens/Test';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
 import { ActivityIndicator, useWindowDimensions, View } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
+import Welcome from './src/screens/Welcome';
+import Orientation from 'react-native-orientation-locker';
 
+const Stack = createNativeStackNavigator()
 
 const App = () => {
 
-  const {width, height} = useWindowDimensions()
-  const [openedFromUrl, setOpenedFromUrl] = useState(false)
+  const { width, height } = useWindowDimensions()
   const [link, setLink] = useState('')
   const [loading, setLoading] = useState(true)
 
   const handleDynamicLink = link => {
     if (link) {
-      setLink(link.url)
       dynamicLinks()
         .getInitialLink()
         .then(() => {
-          setOpenedFromUrl(true)
+          setLink(link.url)
         });
     }
   }
 
   useEffect(() => {
 
+    Orientation.lockToLandscape();
+    
+
     dynamicLinks()
       .getInitialLink()
       .then(link => {
         if (link && link.url) {
           setLink(link.url)
-          setOpenedFromUrl(true)
         }
       });
-
     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
     // When the component is unmounted, remove the listener
     return () => unsubscribe();
   }, [])
 
-  setTimeout(()=>{
+  setTimeout(() => {
     setLoading(false)
-  },300)
+  }, 300)
 
   if (loading) {
-    return <View style={{width,height, justifyContent: 'center', alignItems: 'center' }}>
+    return <View style={{ width, height, justifyContent: 'center', alignItems: 'center' }}>
       <ActivityIndicator size={'large'} />
     </View>
   }
 
   return <GestureHandlerRootView style={{ flex: 1 }}>
 
-    {
-      openedFromUrl ? <Camera link={link} /> : <QRReader setLink={setLink} />
-    }
-
-    {/* <NavigationContainer>
-      <Stack.Navigator screenOptions={{
+    <NavigationContainer>
+      <Stack.Navigator ges screenOptions={{
         headerShown: false,
-
+        animation: 'slide_from_right',
+        gestureDirection: 'vertical',
+        unmountOnBlur: true,
       }}>
-        <Stack.Screen name='QR' component={QRReader} />
-        <Stack.Screen name='Test' component={Test} />
+        {
+          link ? <>
+            <Stack.Screen name='Welcome' component={Welcome} initialParams={{ link }}/>
+            <Stack.Screen name='Camera' component={Camera} initialParams={{ link }} />
+          </> : <>
+            <Stack.Screen name='QR' component={QRReader} initialParams={{ setLink: setLink }} />
+            <Stack.Screen name='Welcome' component={Welcome} initialParams={{ link,setLink:setLink }} />
+            <Stack.Screen name='Camera' component={Camera} initialParams={{ link }} />
+          </>
+        }
       </Stack.Navigator>
-    </NavigationContainer> */}
+    </NavigationContainer>
 
   </GestureHandlerRootView>
 }
 
 export default App
-{/* <Stack.Screen name='Welcome' component={Welcome} /> */ }
-{/* <Stack.Screen name='Camera' component={Camera} /> */ }
