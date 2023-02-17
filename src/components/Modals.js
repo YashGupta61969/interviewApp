@@ -1,4 +1,4 @@
-import { Modal, StyleSheet, Text, useWindowDimensions, View, TouchableOpacity } from 'react-native'
+import { Modal, StyleSheet, Text, useWindowDimensions, View, TouchableOpacity, StatusBar } from 'react-native'
 import React from 'react'
 
 const Modals = ({ modalVisible, setModalVisible, errorHead, errorDesc }) => {
@@ -12,6 +12,14 @@ const Modals = ({ modalVisible, setModalVisible, errorHead, errorDesc }) => {
             onRequestClose={() => {
                 setModalVisible(false);
             }}>
+            <StatusBar
+                animated={true}
+                backgroundColor="rgba(227, 89, 255,0.3)"
+                barStyle={'dark-content'}
+                showHideTransition={'slide'}
+                hidden={true}
+            />
+
             <View style={{ ...Styles.modal, height: height, width: width }}>
                 <View style={Styles.modal_content}>
                     <Text style={{ ...Styles.modal_head }}>{errorHead}</Text>
@@ -21,13 +29,13 @@ const Modals = ({ modalVisible, setModalVisible, errorHead, errorDesc }) => {
                         <TouchableOpacity style={{ paddingVertical: 8 }} onPress={() => {
                             setModalVisible(false);
                         }}>
-                            <Text style={{color:'#006ee6'}}>Okay</Text>
+                            <Text style={{ color: '#006ee6' }}>Okay</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={{ paddingVertical: 8 }} onPress={() => {
                             setModalVisible(false)
                         }}>
-                            <Text style={{color:'#006ee6'}}>Cancel</Text>
+                            <Text style={{ color: '#006ee6' }}>Cancel</Text>
                         </TouchableOpacity>
 
                     </View>

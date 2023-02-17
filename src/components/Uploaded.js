@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, useWindowDimensions, Modal, ActivityIndicator, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, useWindowDimensions, Modal, ActivityIndicator, TouchableOpacity, StatusBar } from 'react-native'
 import React from 'react'
 
 const Uploaded = ({ visible, setVisible, uploaded }) => {
@@ -9,6 +9,14 @@ const Uploaded = ({ visible, setVisible, uploaded }) => {
             animationType={'fade'}
             onRequestClose={() => setVisible(false)}
             transparent={true}>
+
+            <StatusBar
+                animated={true}
+                backgroundColor="rgba(227, 89, 255,0.3)"
+                barStyle={'dark-content'}
+                showHideTransition={'slide'}
+                hidden={true}
+            />
             <View style={{ ...styles.modal, height, width }}>
                 <View style={styles.modal_content}>
 
@@ -39,8 +47,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         outline: 0,
-      },
-      modal_content: {
+    },
+    modal_content: {
         width: 250,
         alignItems: 'center',
         paddingTop: 15,
@@ -48,6 +56,6 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
         backgroundColor: 'white',
         borderRadius: 8
-      },
-    
+    },
+
 })
