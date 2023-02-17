@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, useWindowDimensions, TouchableOpacity, Alert, Platform } from 'react-native'
+import { StyleSheet, Text, View, useWindowDimensions, TouchableOpacity, Alert, Animated } from 'react-native'
 import React, { useState, useRef, useEffect } from 'react'
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
 import Modals from '../components/Modals';
@@ -6,29 +6,35 @@ import { RNCamera } from 'react-native-camera';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import Uploaded from '../components/Uploaded';
+import { useIsFocused } from '@react-navigation/native';
+import { Swipeable } from 'react-native-gesture-handler';
 
 const Camera = ({ route, navigation }) => {
 
     const { width, height } = useWindowDimensions();
     const ref = useRef();
-    const { link } = route.params;
+    const swipeRef = useRef();
+    const { link, questionId } = route.params;
+    const isFocused = useIsFocused();
     const documentId = link.split('data=')[1];
-    
+
     const [uploaded, setUploaded] = useState(false)
     const [visible, setVisible] = useState(false)
     const [paused, setPaused] = useState(false)
     const [modalVisible, setModalVisible] = useState(false)
     const [isRecording, setIsRecording] = useState(false)
     const [data, setData] = useState({})
-    const [currentIndex, setCurrentIndex] = useState(0)
+    const [didRedo, setDidRedo] = useState(false)
+    const [currentIndex, setCurrentIndex] = useState(questionId)
     const currentQuestion = data && data.questions && data.questions[currentIndex];
 
-    // Fetches all the data from firebase db
+    // Fetches the question from firebase
     useEffect(() => {
         firestore().collection('users').doc(documentId).get().then((res) => {
             setData(res.data())
         })
-    }, [])
+    }, [isFocused]);
+
 
     // Starts Recording Video
     const startRecording = async () => {
@@ -40,6 +46,10 @@ const Camera = ({ route, navigation }) => {
         }
         try {
             const { uri } = await ref.current.recordAsync();
+
+            if (didRedo) {
+                return;
+            }
 
             if (uri) {
                 setVisible(true)
@@ -65,7 +75,9 @@ const Camera = ({ route, navigation }) => {
 
                 if (currentIndex + 1 === Object.values(data.questions).length) {
                     Alert.alert('Completed', 'Your Response Has Been Submitted')
-                    navigation.navigate('Welcome',{link:''})
+                    navigation.navigate('Welcome', { link: 'empty' })
+                } else {
+                    navigation.navigate(`Camera${questionId + 1}`)
                 }
             }
         } catch (error) {
@@ -86,16 +98,28 @@ const Camera = ({ route, navigation }) => {
     // Stops Recording
     const submitRecording = async () => {
         setUploaded(false)
-        await ref.current.stopRecording();
         setIsRecording(false);
+        await ref.current.stopRecording();
     }
 
     // Redo Question
     const redoQuestion = () => {
+        setDidRedo(true)
         ref.current.stopRecording();
+        swipeRef.current.close();
         Alert.alert('Redoing A Question', 'Tap Okay To Continue');
     }
 
+    // Listener on Swipe
+    const onSwipeableOpen = (direction) => {
+        if (direction === 'left') {
+            redoQuestion();
+        } else {
+            submitRecording()
+        }
+    }
+
+    // If No Questions Available, navigate to QR Screen
     if (data && data.questions && currentQuestion.answer) {
         if (currentIndex + 1 === Object.values(data.questions).length) {
             Alert.alert('You Have Completed Your Interview.')
@@ -104,23 +128,30 @@ const Camera = ({ route, navigation }) => {
         setCurrentIndex(prev => prev + 1)
     }
 
-    if (data && data.questions) return (
-        <RNCamera
-            onTap={pauseRecording}
-            ref={ref}
-            style={{ width, height, overflow: 'hidden' }}
-            type='front'>
+    if (data && data.questions && isFocused) return (
+        <Swipeable
+            ref={swipeRef}
+            onSwipeableOpen={onSwipeableOpen}
+            renderLeftActions={() => <Text>.</Text>}
+            renderRightActions={() => <Text>.</Text>}
+        >
 
-            <View style={styles.question}>
-                <Text style={{ fontSize: 20 }}>{currentQuestion.value}</Text>
-            </View>
+            <RNCamera
+                // onTap={pauseRecording}
+                ref={ref}
+                style={{ width, height, overflow: 'hidden' }}
+                type='front'>
 
-            {!isRecording && <TouchableOpacity style={styles.recordingStopBtn} onPress={startRecording} >
-                <MaterialCommunity name={'pause'} size={80} />
-            </TouchableOpacity>
-            }
+                <View style={styles.question}>
+                    <Animated.Text style={[styles.questionText]}>{currentQuestion.value}</Animated.Text>
+                </View>
 
-            {/* <View style={styles.btns}>
+                {!isRecording && <TouchableOpacity style={styles.recordingStopBtn} onPress={startRecording} >
+                    <MaterialCommunity name={'pause'} size={80} />
+                </TouchableOpacity>
+                }
+
+                {/* <View style={styles.btns}>
                 <TouchableOpacity style={styles.btn} onPress={redoQuestion}>
                     <Text style={{ fontSize: 17 }}>Redo</Text>
                 </TouchableOpacity>
@@ -129,10 +160,11 @@ const Camera = ({ route, navigation }) => {
                 </TouchableOpacity>
             </View> */}
 
-            <Modals modalVisible={modalVisible} setModalVisible={setModalVisible} errorHead={'Redo Question ?'} errorDesc={'Are you sure you want to redo this question'} />
+                <Modals modalVisible={modalVisible} setModalVisible={setModalVisible} errorHead={'Redo Question ?'} errorDesc={'Are you sure you want to redo this question'} />
 
-            <Uploaded setVisible={setVisible} visible={visible} uploaded={uploaded} />
-        </RNCamera>
+                <Uploaded setVisible={setVisible} visible={visible} uploaded={uploaded} />
+            </RNCamera>
+        </Swipeable>
     )
 }
 
@@ -145,15 +177,18 @@ const styles = StyleSheet.create({
     },
     question: {
         width: '100%',
-        position: 'absolute',
-        top: 0,
-        backgroundColor: 'rgba(0,0,0,0.7)',
+        height: '100%',
+        // justifyContent: 'center',
+        // alignItems: 'center',
         paddingHorizontal: 5,
-        paddingVertical: 10
+        paddingVertical: 10,
     },
     recordingStopBtn: {
         position: 'absolute',
-        top: '45%',
+        top: '50%',
+        transform: [
+            { translateY: -50 }
+        ],
         backgroundColor: 'rgba(0,0,0,0.2)',
         width: 100,
         height: 100,
@@ -175,5 +210,17 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
         paddingHorizontal: 20,
         borderRadius: 5
+    },
+    questionText: {
+        fontSize: 50,
+        color: 'white',
+        fontWeight: '700',
+        textAlign: 'center',
+        textShadowColor: 'rgb(227, 89, 255)',
+        textShadowOffset: { width: -5, height: -3 },
+        textShadowRadius: 5,
+        // position:'absolute',
+        // left:0,
+        // right:0,
     }
 });
