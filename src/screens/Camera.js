@@ -41,7 +41,7 @@ const Camera = ({ route, navigation }) => {
         if (paused) {
             setPaused(false)
             setIsRecording(true)
-            return await ref.current.resumePreview();
+            return await ref.current.resumeRecording();
         }
         try {
             const { uri } = await ref.current.recordAsync();
@@ -110,7 +110,7 @@ const Camera = ({ route, navigation }) => {
         if (isRecording) {
             setIsRecording(false)
             setPaused(true)
-            await ref.current.pausePreview();
+            await ref.current.pauseRecording();
         }
     }
 
@@ -156,7 +156,7 @@ const Camera = ({ route, navigation }) => {
         >
 
             <RNCamera
-                // onTap={pauseRecording}
+                onTap={pauseRecording}
                 ref={ref}
                 style={{ width, height, overflow: 'hidden' }}
                 type='front'>
