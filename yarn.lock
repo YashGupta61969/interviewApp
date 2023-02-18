@@ -1679,11 +1679,6 @@
   resolved "https://registry.npmjs.org/@react-native-community/eslint-plugin/-/eslint-plugin-1.3.0.tgz"
   integrity sha512-+zDZ20NUnSWghj7Ku5aFphMzuM9JulqCW+aPXT6IfIXFbb8tzYTTOSeRFOtuekJ99ibW2fUCSsjuKNlwDIbHFg==
 
-"@react-native-firebase/analytics@^17.0.0":
-  version "17.0.0"
-  resolved "https://registry.npmjs.org/@react-native-firebase/analytics/-/analytics-17.0.0.tgz"
-  integrity sha512-3OqjBJXA9QAlrlC20V2EgpdXb4XDmieRoNOW0w3yi94egsWhGBw+J1RH6zcxTwspExEkZ+bgW0KRkx8Yj0lh3g==
-
 "@react-native-firebase/app@^17.0.0":
   version "17.0.0"
   resolved "https://registry.npmjs.org/@react-native-firebase/app/-/app-17.0.0.tgz"
@@ -1704,11 +1699,6 @@
   version "17.0.0"
   resolved "https://registry.npmjs.org/@react-native-firebase/firestore/-/firestore-17.0.0.tgz"
   integrity sha512-0/4UWq0LmIHmjXBDwtfMo1uxsM8cjD+2P8XOt8H+S/KKExXGpEBT7QQEdMXD98H5PmbMbBiywfA5RSsQAco63A==
-
-"@react-native-firebase/storage@^17.1.0":
-  version "17.1.0"
-  resolved "https://registry.npmjs.org/@react-native-firebase/storage/-/storage-17.1.0.tgz"
-  integrity sha512-aj16L1rhIUed5ZEgp1bi7yB9Bh5v5P35YYELGG7vDePtciWm6L5ss574wYgjCgMV0hrAwm8o2DvpJ6rMlO47Kg==
 
 "@react-native/assets@1.0.0":
   version "1.0.0"
