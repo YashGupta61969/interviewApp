@@ -1,18 +1,16 @@
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native'
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import firestore from '@react-native-firebase/firestore';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { RNCamera } from 'react-native-camera';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { useIsFocused } from '@react-navigation/native';
 
-const Welcome = ({ route, navigation }) => {
+const Welcome = ({ route }) => {
     const { link } = route.params;
     const documentId = link.split('data=')[1];
     const { height, width } = useWindowDimensions()
     const [showInfo, setShowInfo] = useState(false)
     const isFocused = useIsFocused()
-    const swipeRef = useRef()
 
     const [data, setData] = useState({})
 
@@ -27,19 +25,9 @@ const Welcome = ({ route, navigation }) => {
             setData({ ...res.data(), questions: newArr })
         }).catch(err=>console.log(err))
     }, [isFocused]);
-
-    const onSwipeableOpen = (d) => {
-        swipeRef.current.close()
-        navigation.navigate('Tabs')
-    }
     // Returns Camera Screen Option When Questions Are Available 
     return (
         <>
-            <Swipeable onSwipeableOpen={onSwipeableOpen}
-                ref={swipeRef}
-                renderRightActions={() => <Text>.</Text>}
-                enabled={data && data.questions && data.questions.length >= 1}
-            >
                 {!showInfo && <MaterialIcons name='info-outline' color='rgb(227, 89, 255)' size={40} style={styles.infoIcon} onPress={() => setShowInfo(true)} />}
 
                 {
@@ -66,7 +54,6 @@ const Welcome = ({ route, navigation }) => {
                         </View>)
                     }
                 </RNCamera>
-            </Swipeable>
         </>
     )
 }

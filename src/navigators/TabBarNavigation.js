@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import firestore from '@react-native-firebase/firestore';
 import Camera from '../screens/Camera';
+import Welcome from '../screens/Welcome';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -30,9 +31,10 @@ const TabBarNavigation = ({ route }) => {
                 tabBarStyle: { display: 'none' },
                 swipeEnabled: false
             }}>
+                <Tab.Screen name={`Welcome`} component={Welcome} initialParams={{ link }} options={{swipeEnabled:true}}/>
                 {
                     Object.values(data.questions).filter(fil => !fil.answer).map(d => {
-                        return <Tab.Screen name={`Camera${d.id}`} component={Camera} initialParams={{ link, questionId: d.id }} key={d.id} />
+                        return <Tab.Screen name={`Camera${d.id}`} component={Camera} initialParams={{ link, questionId: d.id }} key={d.id}/>
                     })
                 }
             </Tab.Navigator>

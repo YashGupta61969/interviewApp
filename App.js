@@ -5,7 +5,7 @@ import dynamicLinks from '@react-native-firebase/dynamic-links';
 import { ActivityIndicator, StatusBar, useWindowDimensions, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
-import Welcome from './src/screens/Welcome';
+// import Welcome from './src/screens/Welcome';
 import TabBarNavigation from './src/navigators/TabBarNavigation';
 import Orientation from 'react-native-orientation-locker';
 
@@ -73,11 +73,11 @@ const App = () => {
       }}>
         {
           link ? <>
-            <Stack.Screen name='Welcome' component={Welcome} initialParams={{ link }} />
+            {/* <Stack.Screen name='Welcome' component={Welcome} initialParams={{ link }} /> */}
             <Stack.Screen name='Tabs' component={TabBarNavigation} initialParams={{ link }} />
           </> : <>
             <Stack.Screen name='QR' component={QRReader} initialParams={{ setLink: setLink }} />
-            <Stack.Screen name='Welcome' component={Welcome} initialParams={{ link, setLink: setLink }} />
+            {/* <Stack.Screen name='Welcome' component={Welcome} initialParams={{ link }} /> */}
             <Stack.Screen name='Tabs' component={TabBarNavigation} initialParams={{ link }} />
           </>
         }
