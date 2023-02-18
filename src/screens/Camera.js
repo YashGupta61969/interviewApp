@@ -54,21 +54,41 @@ const Camera = ({ route, navigation }) => {
             if (uri) {
                 setVisible(true)
 
-                const reference = storage().ref(`${currentQuestion.value.split(' ').join('-')}-${currentQuestion.id}`);
+                const form = new FormData()
 
-                await reference.putFile(uri);
-
-                const url = await reference.getDownloadURL();
-
-                await firestore().collection('users').doc(data.id).update({
-                    questions: {
-                        ...data.questions,
-                        [currentQuestion.id]: {
-                            ...data.questions[currentQuestion.id],
-                            answer: url
-                        }
-                    }
+                form.append('video', {
+                    uri: uri,
+                    type: 'video/mp4',
+                    name: `${currentQuestion.value}-${currentQuestion.id}`
                 })
+
+                form.append('documentId',documentId)
+
+                const response = await fetch('http://142.93.219.133/video-app/', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                    body: form
+                });
+
+                console.log(await response.json())
+
+                // const reference = storage().ref(`${currentQuestion.value.split(' ').join('-')}-${currentQuestion.id}`);
+
+                // await reference.putFile(uri);
+
+                // const url = await reference.getDownloadURL();
+
+                // await firestore().collection('users').doc(data.id).update({
+                //     questions: {
+                //         ...data.questions,
+                //         [currentQuestion.id]: {
+                //             ...data.questions[currentQuestion.id],
+                //             answer: url
+                //         }
+                //     }
+                // })
 
                 setUploaded(true)
                 setVisible(false)
