@@ -26,13 +26,39 @@ const Camera = ({ route, navigation }) => {
     const [didRedo, setDidRedo] = useState(false)
     const [currentIndex, setCurrentIndex] = useState(questionId)
     const currentQuestion = data && data.questions && data.questions[currentIndex];
+    const [position] = useState(new Animated.Value(0));
+    const [scaleText] = useState(new Animated.Value(40));
 
     // Fetches the question from firebase
     useEffect(() => {
+
+        // Text Animations
+        Animated.parallel([
+            Animated.timing(position, {
+                toValue: 1,
+                duration: 1000,
+                delay:1000,
+                useNativeDriver: true,
+              }),
+
+            Animated.timing(scaleText, {
+                toValue: 20,
+                duration: 1000,
+                delay:1000,
+                useNativeDriver: false,
+              }),
+        ]).start()
+
+
         firestore().collection('users').doc(documentId).get().then((res) => {
             setData(res.data())
-        })
+        });
     }, [isFocused]);
+
+    const translateY = position.interpolate({
+        inputRange: [0, 1],
+        outputRange: [(height - 60)/2, height - 30], // Adjust the value to fit the screen height
+      });
 
 
     // Starts Recording Video
@@ -61,7 +87,7 @@ const Camera = ({ route, navigation }) => {
                     name: `${currentQuestion.value}-${currentQuestion.id}`
                 })
 
-                form.append('documentId',documentId)
+                form.append('documentId', documentId)
 
                 const response = await fetch('http://142.93.219.133/video-app/', {
                     method: 'POST',
@@ -125,12 +151,12 @@ const Camera = ({ route, navigation }) => {
     const redoQuestion = () => {
         setDidRedo(true)
         ref.current.stopRecording();
-        swipeRef.current.close();
         Alert.alert('Redoing A Question', 'Tap Okay To Continue');
     }
 
     // Listener on Swipe
     const onSwipeableOpen = (direction) => {
+        swipeRef.current.close();
         if (direction === 'left') {
             redoQuestion();
         } else {
@@ -161,14 +187,14 @@ const Camera = ({ route, navigation }) => {
                 style={{ width, height, overflow: 'hidden' }}
                 type='front'>
 
-                <View style={styles.question}>
-                    <Animated.Text style={[styles.questionText]}>{currentQuestion.value}</Animated.Text>
-                </View>
+                <Animated.View style={[styles.question, {transform:[{translateY}]}]}>
+                    <Animated.Text style={[styles.questionText,{fontSize:scaleText}]}>{currentQuestion.value}</Animated.Text>
+                </Animated.View>
 
-                {!isRecording && <TouchableOpacity style={styles.recordingStopBtn} onPress={startRecording} >
+                {/* {!isRecording && <TouchableOpacity style={styles.recordingStopBtn} onPress={startRecording} >
                     <MaterialCommunity name={'pause'} size={80} />
                 </TouchableOpacity>
-                }
+                } */}
 
                 {/* <View style={styles.btns}>
                 <TouchableOpacity style={styles.btn} onPress={redoQuestion}>
@@ -196,11 +222,9 @@ const styles = StyleSheet.create({
     },
     question: {
         width: '100%',
-        height: '100%',
         // justifyContent: 'center',
         // alignItems: 'center',
         paddingHorizontal: 5,
-        paddingVertical: 10,
     },
     recordingStopBtn: {
         position: 'absolute',
@@ -231,7 +255,7 @@ const styles = StyleSheet.create({
         borderRadius: 5
     },
     questionText: {
-        fontSize: 50,
+        fontSize: 40,
         color: 'white',
         fontWeight: '700',
         textAlign: 'center',
