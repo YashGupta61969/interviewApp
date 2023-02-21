@@ -12,6 +12,7 @@ const Camera = ({ route, navigation }) => {
 
     const { width, height } = useWindowDimensions();
     const ref = useRef();
+    const redoRef = useRef(false)
     const swipeRef = useRef();
     const { link, questionId } = route.params;
     const isFocused = useIsFocused();
@@ -25,9 +26,9 @@ const Camera = ({ route, navigation }) => {
     const [modalVisible, setModalVisible] = useState(false)
     const [isRecording, setIsRecording] = useState(false)
     const [data, setData] = useState({})
-    const [didRedo, setDidRedo] = useState(false)
     const [currentIndex, setCurrentIndex] = useState(questionId)
     const currentQuestion = data && data.questions && data.questions[currentIndex];
+
 
     useEffect(() => {
         // Text Animations
@@ -66,10 +67,11 @@ const Camera = ({ route, navigation }) => {
         inputRange: [0, 1],
         outputRange: [(height - 80) / 2, height - 30], // Adjust the value to fit the screen height
     });
-
+    
     //   Uploads Video To Server
     const uploadVideo = async (uri) => {
-        if (didRedo) {
+        if (redoRef.current) {
+            redoRef.current = false
             return;
         }
 
@@ -153,9 +155,10 @@ const Camera = ({ route, navigation }) => {
     }
 
     // Redo Question
-    const redoQuestion = () => {
-        setDidRedo(true)
-        ref.current.stopRecording();
+    const redoQuestion = async () => {
+        setIsRecording(false)
+        redoRef.current = true
+        await ref.current.stopRecording();
         Alert.alert('Redoing A Question', 'Tap Okay To Continue');
     }
 
