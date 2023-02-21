@@ -15,7 +15,7 @@ const Uploaded = ({ visible, setVisible, uploaded }) => {
                 <View style={styles.modal_content}>
 
                     {!uploaded && <><Text style={{ color: 'black', fontSize: 22, marginBottom: 15 }}>Uploading</Text>
-                        <ActivityIndicator size={38} color='blue' /></>}
+                        <ActivityIndicator size={38} color='rgb(227, 89, 255)' /></>}
 
                     {
                         uploaded && <View>
