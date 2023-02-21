@@ -25,13 +25,22 @@ const TabBarNavigation = ({ route }) => {
         </View>
     }
 
+    // const isSwipeEnabled = (route, direction) => {
+    //     if (direction === 'right') {
+    //       // disable swiping from left to right
+    //       return false;
+    //     }
+    //     // enable swiping in other directions
+    //     return true;
+    //   };
+
     return (
         <SafeAreaView style={{flex:1}}>
             <Tab.Navigator backBehavior='none' screenOptions={{
                 tabBarStyle: { display: 'none' },
-                swipeEnabled: false
+                swipeEnabled: true
             }}>
-                <Tab.Screen name={`Welcome`} component={Welcome} initialParams={{ link }} options={{swipeEnabled:true}}/>
+                <Tab.Screen name={`Welcome`} component={Welcome} initialParams={{ link }}   />
                 {
                     Object.values(data.questions).filter(fil => !fil.answer).map(d => {
                         return <Tab.Screen name={`Camera${d.id}`} component={Camera} initialParams={{ link, questionId: d.id }} key={d.id}/>

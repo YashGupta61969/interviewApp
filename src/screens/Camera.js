@@ -17,6 +17,8 @@ const Camera = ({ route, navigation }) => {
     const isFocused = useIsFocused();
     const documentId = link.split('data=')[1];
 
+    const [position] = useState(new Animated.Value(0));
+    const [fontSize] = useState(new Animated.Value(40));
     const [uploaded, setUploaded] = useState(false)
     const [visible, setVisible] = useState(false)
     const [paused, setPaused] = useState(false)
@@ -26,40 +28,85 @@ const Camera = ({ route, navigation }) => {
     const [didRedo, setDidRedo] = useState(false)
     const [currentIndex, setCurrentIndex] = useState(questionId)
     const currentQuestion = data && data.questions && data.questions[currentIndex];
-    const [position] = useState(new Animated.Value(0));
-    const [scaleText] = useState(new Animated.Value(40));
 
-    // Fetches the question from firebase
     useEffect(() => {
-
         // Text Animations
-        Animated.parallel([
-            Animated.timing(position, {
-                toValue: 1,
-                duration: 1000,
-                delay:1000,
-                useNativeDriver: true,
-              }),
+        const runAnimations = () => {
+            Animated.parallel([
+                Animated.timing(position, {
+                    toValue: 1,
+                    duration: 2000,
+                    delay: 3000,
+                    useNativeDriver: true,
+                }),
 
-            Animated.timing(scaleText, {
-                toValue: 20,
-                duration: 1000,
-                delay:1000,
-                useNativeDriver: false,
-              }),
-        ]).start()
+                Animated.timing(fontSize, {
+                    toValue: 20,
+                    duration: 2000,
+                    delay: 3000,
+                    useNativeDriver: false,
+                }),
+            ]).start();
+        }
 
-
+        // Fetches the question from firebase
         firestore().collection('users').doc(documentId).get().then((res) => {
             setData(res.data())
+            runAnimations()
         });
-    }, [isFocused]);
+    }, [isFocused, questionId]);
 
+    // Translates Question Text From Center to Bottom With ANimation
     const translateY = position.interpolate({
         inputRange: [0, 1],
-        outputRange: [(height - 60)/2, height - 30], // Adjust the value to fit the screen height
-      });
+        outputRange: [(height - 80) / 2, height - 30], // Adjust the value to fit the screen height
+    });
 
+    //   Uploads Video To Server
+    const uploadVideo = async (uri) => {
+        if (didRedo) {
+            return;
+        }
+
+        setVisible(true)
+        setVisible(true)
+
+        setVisible(true)
+
+        const form = new FormData()
+
+        try {
+            form.append('video', {
+                uri: uri,
+                type: 'video/mp4',
+                name: `${currentQuestion.value}-${currentQuestion.id}`
+            })
+            form.append('documentId', documentId)
+
+            const response = await fetch('http://142.93.219.133/video-app/', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                },
+                body: form
+            });
+            console.log(await response.json())
+
+            setUploaded(true)
+            setVisible(false)
+
+            // Checks if There are more questions. If none, then navigqate to Welcome Screen, else display next question
+            if (currentIndex + 1 === Object.values(data.questions).length) {
+                Alert.alert('Completed', 'Your Response Has Been Submitted')
+                // navigation.navigate('Welcome', { link: 'empty' })
+                navigation.navigate('QR')
+            } else {
+                navigation.navigate(`Camera${questionId + 1}`)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     // Starts Recording Video
     const startRecording = async () => {
@@ -72,58 +119,8 @@ const Camera = ({ route, navigation }) => {
         try {
             const { uri } = await ref.current.recordAsync();
 
-            if (didRedo) {
-                return;
-            }
-
             if (uri) {
-                setVisible(true)
-
-                const form = new FormData()
-
-                form.append('video', {
-                    uri: uri,
-                    type: 'video/mp4',
-                    name: `${currentQuestion.value}-${currentQuestion.id}`
-                })
-
-                form.append('documentId', documentId)
-
-                const response = await fetch('http://142.93.219.133/video-app/', {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                    },
-                    body: form
-                });
-
-                console.log(await response.json())
-
-                // const reference = storage().ref(`${currentQuestion.value.split(' ').join('-')}-${currentQuestion.id}`);
-
-                // await reference.putFile(uri);
-
-                // const url = await reference.getDownloadURL();
-
-                // await firestore().collection('users').doc(data.id).update({
-                //     questions: {
-                //         ...data.questions,
-                //         [currentQuestion.id]: {
-                //             ...data.questions[currentQuestion.id],
-                //             answer: url
-                //         }
-                //     }
-                // })
-
-                setUploaded(true)
-                setVisible(false)
-
-                if (currentIndex + 1 === Object.values(data.questions).length) {
-                    Alert.alert('Completed', 'Your Response Has Been Submitted')
-                    navigation.navigate('Welcome', { link: 'empty' })
-                } else {
-                    navigation.navigate(`Camera${questionId + 1}`)
-                }
+                uploadVideo(uri)
             }
         } catch (error) {
             console.log(error)
@@ -165,14 +162,15 @@ const Camera = ({ route, navigation }) => {
     }
 
     // If No Questions Available, navigate to QR Screen
-    if (data && data.questions && currentQuestion.answer) {
+    if (currentQuestion && currentQuestion.answer) {
         if (currentIndex + 1 === Object.values(data.questions).length) {
             Alert.alert('You Have Completed Your Interview.')
-            return navigation.navigate('QR')
+            return navigation.navigate('Welcome', { link })
         }
         setCurrentIndex(prev => prev + 1)
     }
 
+    // display questions
     if (data && data.questions && isFocused) return (
         <Swipeable
             ref={swipeRef}
@@ -187,14 +185,14 @@ const Camera = ({ route, navigation }) => {
                 style={{ width, height, overflow: 'hidden' }}
                 type='front'>
 
-                <Animated.View style={[styles.question, {transform:[{translateY}]}]}>
-                    <Animated.Text style={[styles.questionText,{fontSize:scaleText}]}>{currentQuestion.value}</Animated.Text>
+                <Animated.View style={[styles.question, { transform: [{ translateY }] }]}>
+                    <Animated.Text style={[styles.questionText, { fontSize }]}>{currentQuestion?.value}</Animated.Text>
                 </Animated.View>
 
-                {/* {!isRecording && <TouchableOpacity style={styles.recordingStopBtn} onPress={startRecording} >
+                {!isRecording && <TouchableOpacity style={styles.recordingStopBtn} onPress={startRecording} >
                     <MaterialCommunity name={'pause'} size={80} />
                 </TouchableOpacity>
-                } */}
+                }
 
                 {/* <View style={styles.btns}>
                 <TouchableOpacity style={styles.btn} onPress={redoQuestion}>
@@ -224,7 +222,7 @@ const styles = StyleSheet.create({
         width: '100%',
         // justifyContent: 'center',
         // alignItems: 'center',
-        paddingHorizontal: 5,
+        paddingHorizontal: 8,
     },
     recordingStopBtn: {
         position: 'absolute',

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import QRReader from './src/screens/QRReader';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
-import { ActivityIndicator, StatusBar, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, useWindowDimensions, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 // import Welcome from './src/screens/Welcome';
@@ -56,14 +56,6 @@ const App = () => {
 
   return <GestureHandlerRootView style={{ flex: 1 }}>
 
-    <StatusBar
-      animated={true}
-      backgroundColor="rgba(227, 89, 255,0.3)"
-      barStyle={'dark-content'}
-      showHideTransition={'slide'}
-      hidden={true}
-    />
-
     <NavigationContainer>
       <Stack.Navigator ges screenOptions={{
         headerShown: false,
@@ -73,7 +65,6 @@ const App = () => {
       }}>
         {
           link ? <>
-            {/* <Stack.Screen name='Welcome' component={Welcome} initialParams={{ link }} /> */}
             <Stack.Screen name='Tabs' component={TabBarNavigation} initialParams={{ link }} />
           </> : <>
             <Stack.Screen name='QR' component={QRReader} initialParams={{ setLink: setLink }} />

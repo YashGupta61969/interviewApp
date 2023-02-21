@@ -2,7 +2,7 @@ import { StyleSheet, View, Linking, useWindowDimensions, Text } from 'react-nati
 import React, { useRef } from 'react'
 import QRCodeScanner from 'react-native-qrcode-scanner'
 
-const QRReader = ({ route, navigation }) => {
+const QRReader = ({ route }) => {
     const { setLink } = route.params;
     const { height, width } = useWindowDimensions()
     const ref = useRef()
