@@ -22,13 +22,13 @@ const TabBarNavigation = ({ route }) => {
     }, [])
 
     if (!data) {
-        return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center',backgroundColor:'black' }}>
             <ActivityIndicator size={'large'} color={'rgb(227, 89, 255)'} />
         </View>
     }
 
     // Checks if all questions are answered or not
-    const isSwipeEnabled = (route, direction) => {
+    const isSwipeEnabled = (direction) => {
          if(areQuestionsAvailable){
             return false
          }else if (direction === 'right') {
@@ -38,7 +38,7 @@ const TabBarNavigation = ({ route }) => {
         return true;
       };
 
-    return (
+      return (
         <SafeAreaView style={{flex:1}}>
             <Tab.Navigator backBehavior='none' screenOptions={{
                 tabBarStyle: { display: 'none' },

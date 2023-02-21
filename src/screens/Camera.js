@@ -18,8 +18,8 @@ const Camera = ({ route, navigation }) => {
     const isFocused = useIsFocused();
     const documentId = link.split('data=')[1];
 
-    const [position, setPosition] = useState(new Animated.Value(0));
-    const [fontSize, setFontSize] = useState(new Animated.Value(36));
+    const [position] = useState(new Animated.Value(0));
+    const [fontSize] = useState(new Animated.Value(36));
     const [uploaded, setUploaded] = useState(false)
     const [visible, setVisible] = useState(false)
     const [paused, setPaused] = useState(false)
@@ -29,45 +29,39 @@ const Camera = ({ route, navigation }) => {
     const [currentIndex, setCurrentIndex] = useState(questionId)
     const currentQuestion = data && data.questions && data.questions[currentIndex];
 
-
     useEffect(() => {
+
+        position.setValue(0)
+        fontSize.setValue(36)
+        
         // Text Animations
-        const runAnimations = () => {
-            Animated.parallel([
-                Animated.timing(position, {
-                    toValue: 1,
-                    duration: 2000,
-                    delay: 3000,
-                    useNativeDriver: true,
-                }),
+        Animated.timing(position, {
+            toValue: 1,
+            duration: 1500,
+            delay: 2500,
+            useNativeDriver: true,
+        }).start(),
 
-                Animated.timing(fontSize, {
-                    toValue: 20,
-                    duration: 2000,
-                    delay: 3000,
-                    useNativeDriver: false,
-                }),
-            ]).start();
-        }
+            Animated.timing(fontSize, {
+                toValue: 20,
+                duration: 1500,
+                delay: 2500,
+                useNativeDriver: false,
+            }).start(),
 
-        // Fetches the question from firebase
-        firestore().collection('users').doc(documentId).get().then((res) => {
-            setData(res.data())
-            runAnimations()
-        });
-
-        return ()=>{
-            setPosition(new Animated.Value(0))
-            setFontSize(new Animated.Value(36))
-        }
+            // Fetches the question from firebase
+            firestore().collection('users').doc(documentId).get().then((res) => {
+                setData(res.data())
+            });
     }, [isFocused, questionId]);
 
     // Translates Question Text From Center to Bottom With ANimation
     const translateY = position.interpolate({
         inputRange: [0, 1],
-        outputRange: [(height - 80) / 2, height - 30], // Adjust the value to fit the screen height
+        outputRange: [height / 2, height - 35], // Adjust the value to fit the screen height
+        extrapolate: "clamp",
     });
-    
+
     //   Uploads Video To Server
     const uploadVideo = async (uri) => {
         if (redoRef.current) {
@@ -101,15 +95,14 @@ const Camera = ({ route, navigation }) => {
             setUploaded(true)
             setVisible(false)
 
-            
+
             const questionsLength = Object.values(data.questions).length;
-            const areMoreQuestionas = Object.values(data.questions).some(ques=>!ques.answer)
+            const areMoreQuestionas = Object.values(data.questions).some(ques => !ques.answer)
 
             // Checks if There are more questions. If none, then navigqate to Welcome Screen, else display next question
             if (currentIndex + 1 === questionsLength || !areMoreQuestionas) {
                 Alert.alert('Completed', 'Your Response Has Been Submitted')
-                // navigation.navigate('Welcome', { link: 'empty' })
-                navigation.navigate('Welcome',{link:'empty'})
+                navigation.navigate('Welcome', { link: 'empty' })
             } else {
                 navigation.navigate(`Camera${questionId + 1}`)
             }
@@ -155,11 +148,21 @@ const Camera = ({ route, navigation }) => {
     }
 
     // Redo Question
-    const redoQuestion = async () => {
+    const redoQuestion = () => {
         setIsRecording(false)
-        redoRef.current = true
-        await ref.current.stopRecording();
-        Alert.alert('Redoing A Question', 'Tap Okay To Continue');
+        Alert.alert('Redoing A Question', 'Are you sure you want to redo this question ?', [
+            {
+                text: 'Cancel',
+                onPress: () => { return; },
+            },
+            {
+                text: 'Okay',
+                onPress: async () => {
+                    redoRef.current = true
+                    await ref.current.stopRecording();
+                },
+            },
+        ]);
     }
 
     // Listener on Swipe
@@ -176,7 +179,8 @@ const Camera = ({ route, navigation }) => {
     if (currentQuestion && currentQuestion.answer) {
         if (currentIndex + 1 === Object.values(data.questions).length) {
             Alert.alert('You Have Completed Your Interview.')
-            return navigation.navigate('Welcome', { link })
+            return navigation.navigate('Thanks')
+            // return navigation.navigate('Welcome', { link })
         }
         setCurrentIndex(prev => prev + 1)
     }
@@ -201,7 +205,7 @@ const Camera = ({ route, navigation }) => {
                 </Animated.View>
 
                 {!isRecording && <TouchableOpacity style={styles.recordingStopBtn} onPress={startRecording} >
-                    <MaterialCommunity name={'pause'} size={80} />
+                    <MaterialCommunity name={'pause'} size={80} color='white' />
                 </TouchableOpacity>
                 }
 
@@ -241,7 +245,7 @@ const styles = StyleSheet.create({
         transform: [
             { translateY: -50 }
         ],
-        backgroundColor: 'rgba(0,0,0,0.2)',
+        backgroundColor: 'rgba(227, 89, 255,0.3)',
         width: 100,
         height: 100,
         borderRadius: 50,
@@ -264,7 +268,6 @@ const styles = StyleSheet.create({
         borderRadius: 5
     },
     questionText: {
-        fontSize: 40,
         color: 'white',
         fontWeight: '700',
         textAlign: 'center',
