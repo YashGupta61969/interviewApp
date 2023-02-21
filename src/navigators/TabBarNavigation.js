@@ -11,38 +11,42 @@ const TabBarNavigation = ({ route }) => {
 
     const { link } = route.params;
     const documentId = link.split('data=')[1];
-    const [data, setData] = useState({})
+    const [data, setData] = useState({});
+    const [areQuestionsAvailable, setAreQuestionsAvailable] = useState(false)
 
     useEffect(() => {
         firestore().collection('users').doc(documentId).get().then((res) => {
+            setAreQuestionsAvailable(res.data().questions.some(ques=>!ques.answer))
             setData(res.data())
         })
     }, [])
 
-    if (!data || !data.questions) {
+    if (!data) {
         return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <ActivityIndicator size={'large'} color={'rgb(227, 89, 255)'} />
         </View>
     }
 
-    // const isSwipeEnabled = (route, direction) => {
-    //     if (direction === 'right') {
-    //       // disable swiping from left to right
-    //       return false;
-    //     }
-    //     // enable swiping in other directions
-    //     return true;
-    //   };
+    // Checks if all questions are answered or not
+    const isSwipeEnabled = (route, direction) => {
+         if(areQuestionsAvailable){
+            return false
+         }else if (direction === 'right') {
+          // disable swiping from left to right
+          return false;
+        }
+        return true;
+      };
 
     return (
         <SafeAreaView style={{flex:1}}>
             <Tab.Navigator backBehavior='none' screenOptions={{
                 tabBarStyle: { display: 'none' },
-                swipeEnabled: true
+                swipeEnabled: isSwipeEnabled
             }}>
                 <Tab.Screen name={`Welcome`} component={Welcome} initialParams={{ link }}   />
                 {
-                    Object.values(data.questions).filter(fil => !fil.answer).map(d => {
+                    data && data.questions && Object.values(data.questions).filter(fil => !fil.answer).map(d => {
                         return <Tab.Screen name={`Camera${d.id}`} component={Camera} initialParams={{ link, questionId: d.id }} key={d.id}/>
                     })
                 }

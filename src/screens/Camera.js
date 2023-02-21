@@ -17,8 +17,8 @@ const Camera = ({ route, navigation }) => {
     const isFocused = useIsFocused();
     const documentId = link.split('data=')[1];
 
-    const [position] = useState(new Animated.Value(0));
-    const [fontSize] = useState(new Animated.Value(40));
+    const [position, setPosition] = useState(new Animated.Value(0));
+    const [fontSize, setFontSize] = useState(new Animated.Value(36));
     const [uploaded, setUploaded] = useState(false)
     const [visible, setVisible] = useState(false)
     const [paused, setPaused] = useState(false)
@@ -54,6 +54,11 @@ const Camera = ({ route, navigation }) => {
             setData(res.data())
             runAnimations()
         });
+
+        return ()=>{
+            setPosition(new Animated.Value(0))
+            setFontSize(new Animated.Value(36))
+        }
     }, [isFocused, questionId]);
 
     // Translates Question Text From Center to Bottom With ANimation
@@ -91,15 +96,18 @@ const Camera = ({ route, navigation }) => {
                 body: form
             });
             console.log(await response.json())
-
             setUploaded(true)
             setVisible(false)
 
+            
+            const questionsLength = Object.values(data.questions).length;
+            const areMoreQuestionas = Object.values(data.questions).some(ques=>!ques.answer)
+
             // Checks if There are more questions. If none, then navigqate to Welcome Screen, else display next question
-            if (currentIndex + 1 === Object.values(data.questions).length) {
+            if (currentIndex + 1 === questionsLength || !areMoreQuestionas) {
                 Alert.alert('Completed', 'Your Response Has Been Submitted')
                 // navigation.navigate('Welcome', { link: 'empty' })
-                navigation.navigate('QR')
+                navigation.navigate('Welcome',{link:'empty'})
             } else {
                 navigation.navigate(`Camera${questionId + 1}`)
             }
