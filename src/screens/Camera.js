@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, useWindowDimensions, TouchableOpacity, Alert, Animated } from 'react-native'
+import { StyleSheet, Text, useWindowDimensions, TouchableOpacity, Alert, Animated } from 'react-native'
 import React, { useState, useRef, useEffect } from 'react'
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
 import Modals from '../components/Modals';
@@ -26,14 +26,14 @@ const Camera = ({ route, navigation }) => {
     const [modalVisible, setModalVisible] = useState(false)
     const [isRecording, setIsRecording] = useState(false)
     const [data, setData] = useState({})
-    const [currentIndex, setCurrentIndex] = useState(questionId)
-    const currentQuestion = data && data.questions && data.questions[currentIndex];
+    const [animatedViewHeight, setAnimatedViewHeight] = useState(0)
+    const currentQuestion = data && data.questions && data.questions[questionId];
 
     useEffect(() => {
 
         position.setValue(0)
         fontSize.setValue(36)
-        
+
         // Text Animations
         Animated.timing(position, {
             toValue: 1,
@@ -58,7 +58,7 @@ const Camera = ({ route, navigation }) => {
     // Translates Question Text From Center to Bottom With ANimation
     const translateY = position.interpolate({
         inputRange: [0, 1],
-        outputRange: [height / 2, height - 35], // Adjust the value to fit the screen height
+        outputRange: [(height - animatedViewHeight) / 2, height - animatedViewHeight],
         extrapolate: "clamp",
     });
 
@@ -68,10 +68,6 @@ const Camera = ({ route, navigation }) => {
             redoRef.current = false
             return;
         }
-
-        setVisible(true)
-        setVisible(true)
-
         setVisible(true)
 
         const form = new FormData()
@@ -100,7 +96,7 @@ const Camera = ({ route, navigation }) => {
             const areMoreQuestionas = Object.values(data.questions).some(ques => !ques.answer)
 
             // Checks if There are more questions. If none, then navigqate to Welcome Screen, else display next question
-            if (currentIndex + 1 === questionsLength || !areMoreQuestionas) {
+            if (questionId + 1 === questionsLength || !areMoreQuestionas) {
                 Alert.alert('Completed', 'Your Response Has Been Submitted')
                 navigation.navigate('Welcome', { link: 'empty' })
             } else {
@@ -120,8 +116,9 @@ const Camera = ({ route, navigation }) => {
             return await ref.current.resumeRecording();
         }
         try {
-            const { uri } = await ref.current.recordAsync();
-
+            const { uri } = await ref.current.recordAsync({
+                orientation:"landscapeLeft"
+            });
             if (uri) {
                 uploadVideo(uri)
             }
@@ -175,14 +172,9 @@ const Camera = ({ route, navigation }) => {
         }
     }
 
-    // If No Questions Available, navigate to QR Screen
-    if (currentQuestion && currentQuestion.answer) {
-        if (currentIndex + 1 === Object.values(data.questions).length) {
-            Alert.alert('You Have Completed Your Interview.')
-            return navigation.navigate('Thanks')
-            // return navigation.navigate('Welcome', { link })
-        }
-        setCurrentIndex(prev => prev + 1)
+    const onLayout = (event)=>{
+        const heightOfView = event.nativeEvent.layout.height
+        setAnimatedViewHeight(heightOfView)
     }
 
     // display questions
@@ -200,7 +192,7 @@ const Camera = ({ route, navigation }) => {
                 style={{ width, height, overflow: 'hidden' }}
                 type='front'>
 
-                <Animated.View style={[styles.question, { transform: [{ translateY }] }]}>
+                <Animated.View style={[styles.question, { transform: [{ translateY }] }]} onLayout={onLayout}>
                     <Animated.Text style={[styles.questionText, { fontSize }]}>{currentQuestion?.value}</Animated.Text>
                 </Animated.View>
 
@@ -208,15 +200,6 @@ const Camera = ({ route, navigation }) => {
                     <MaterialCommunity name={'pause'} size={80} color='white' />
                 </TouchableOpacity>
                 }
-
-                {/* <View style={styles.btns}>
-                <TouchableOpacity style={styles.btn} onPress={redoQuestion}>
-                    <Text style={{ fontSize: 17 }}>Redo</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.btn} onPress={submitRecording}>
-                    <Text style={{ fontSize: 17 }}>Next</Text>
-                </TouchableOpacity>
-            </View> */}
 
                 <Modals modalVisible={modalVisible} setModalVisible={setModalVisible} errorHead={'Redo Question ?'} errorDesc={'Are you sure you want to redo this question'} />
 

@@ -5,7 +5,6 @@ import dynamicLinks from '@react-native-firebase/dynamic-links';
 import { ActivityIndicator, useWindowDimensions, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
-// import Welcome from './src/screens/Welcome';
 import TabBarNavigation from './src/navigators/TabBarNavigation';
 import Orientation from 'react-native-orientation-locker';
 
@@ -19,9 +18,7 @@ const App = () => {
 
   const handleDynamicLink = link => {
     if (link) {
-      dynamicLinks()
-        .getInitialLink()
-        .then(() => {
+      dynamicLinks().getInitialLink().then(() => {
           setLink(link.url)
         });
     }
@@ -29,14 +26,12 @@ const App = () => {
 
   useEffect(() => {
     Orientation.lockToLandscape();
-
-    dynamicLinks()
-      .getInitialLink()
-      .then(link => {
+    dynamicLinks().getInitialLink().then(link => {
         if (link && link.url) {
           setLink(link.url)
         }
       });
+
     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
     // When the component is unmounted, remove the listener
     return () => unsubscribe();
@@ -52,8 +47,6 @@ const App = () => {
     </View>
   }
 
-  // return <Camera/>
-
   return <GestureHandlerRootView style={{ flex: 1 }}>
 
     <NavigationContainer>
@@ -67,7 +60,6 @@ const App = () => {
           link ? <Stack.Screen name='Tabs' component={TabBarNavigation} initialParams={{ link }} />
            : <>
             <Stack.Screen name='QR' component={QRReader} initialParams={{ setLink: setLink }} />
-            {/* <Stack.Screen name='Welcome' component={Welcome} initialParams={{ link }} /> */}
             <Stack.Screen name='Tabs' component={TabBarNavigation} initialParams={{ link }} />
           </>
         }
