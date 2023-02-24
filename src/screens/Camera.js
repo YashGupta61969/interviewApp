@@ -1,19 +1,19 @@
-import { StyleSheet, Text, useWindowDimensions, TouchableOpacity, Alert, Animated } from 'react-native'
+import { StyleSheet, useWindowDimensions, TouchableOpacity, Alert, Animated, View, Modal, Text } from 'react-native'
 import React, { useState, useRef, useEffect } from 'react'
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
-import Modals from '../components/Modals';
 import { RNCamera } from 'react-native-camera';
 import firestore from '@react-native-firebase/firestore';
 import Uploaded from '../components/Uploaded';
 import { useIsFocused } from '@react-navigation/native';
 import { Swipeable } from 'react-native-gesture-handler';
+import Entypo from 'react-native-vector-icons/Entypo'
 
 const Camera = ({ route, navigation }) => {
 
-    const { width, height } = useWindowDimensions();
     const ref = useRef();
     const redoRef = useRef(false)
     const swipeRef = useRef();
+    const { width, height } = useWindowDimensions();
     const { link, questionId } = route.params;
     const isFocused = useIsFocused();
     const documentId = link.split('data=')[1];
@@ -23,14 +23,13 @@ const Camera = ({ route, navigation }) => {
     const [uploaded, setUploaded] = useState(false)
     const [visible, setVisible] = useState(false)
     const [paused, setPaused] = useState(false)
-    const [modalVisible, setModalVisible] = useState(false)
+    const [redoModalVisible, setRedoModalVisible] = useState(false)
     const [isRecording, setIsRecording] = useState(false)
     const [data, setData] = useState({})
     const [animatedViewHeight, setAnimatedViewHeight] = useState(0)
     const currentQuestion = data && data.questions && data.questions[questionId];
 
     useEffect(() => {
-
         position.setValue(0)
         fontSize.setValue(36)
 
@@ -70,9 +69,9 @@ const Camera = ({ route, navigation }) => {
         }
         setVisible(true)
 
-        const form = new FormData()
 
         try {
+            const form = new FormData()
             form.append('video', {
                 uri: uri,
                 type: 'video/mp4',
@@ -81,6 +80,7 @@ const Camera = ({ route, navigation }) => {
             form.append('documentId', documentId)
 
             const response = await fetch('http://142.93.219.133/video-app/', {
+                // const response = await fetch('http://192.168.1.15:4004/video-app/', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -88,9 +88,9 @@ const Camera = ({ route, navigation }) => {
                 body: form
             });
             console.log(await response.json())
+
             setUploaded(true)
             setVisible(false)
-
 
             const questionsLength = Object.values(data.questions).length;
             const areMoreQuestionas = Object.values(data.questions).some(ques => !ques.answer)
@@ -117,7 +117,7 @@ const Camera = ({ route, navigation }) => {
         }
         try {
             const { uri } = await ref.current.recordAsync({
-                orientation:"landscapeLeft"
+                orientation: "landscapeLeft",
             });
             if (uri) {
                 uploadVideo(uri)
@@ -147,19 +147,7 @@ const Camera = ({ route, navigation }) => {
     // Redo Question
     const redoQuestion = () => {
         setIsRecording(false)
-        Alert.alert('Redoing A Question', 'Are you sure you want to redo this question ?', [
-            {
-                text: 'Cancel',
-                onPress: () => { return; },
-            },
-            {
-                text: 'Okay',
-                onPress: async () => {
-                    redoRef.current = true
-                    await ref.current.stopRecording();
-                },
-            },
-        ]);
+        setRedoModalVisible(true)
     }
 
     // Listener on Swipe
@@ -172,37 +160,64 @@ const Camera = ({ route, navigation }) => {
         }
     }
 
-    const onLayout = (event)=>{
+    // Sets height of animated text
+    const onLayout = (event) => {
         const heightOfView = event.nativeEvent.layout.height
         setAnimatedViewHeight(heightOfView)
     }
 
-    // display questions
     if (data && data.questions && isFocused) return (
         <Swipeable
             ref={swipeRef}
             onSwipeableOpen={onSwipeableOpen}
-            renderLeftActions={() => <Text>.</Text>}
-            renderRightActions={() => <Text>.</Text>}
+            renderLeftActions={() => <View style={{ width: width / 2, backgroundColor: 'black' }} />}
+            renderRightActions={() => <View style={{ width: width / 2, backgroundColor: 'black' }} />}
         >
-
+            {/* Camera View */}
             <RNCamera
                 onTap={pauseRecording}
                 ref={ref}
                 style={{ width, height, overflow: 'hidden' }}
                 type='front'>
 
+                {/* Animated Text */}
                 <Animated.View style={[styles.question, { transform: [{ translateY }] }]} onLayout={onLayout}>
                     <Animated.Text style={[styles.questionText, { fontSize }]}>{currentQuestion?.value}</Animated.Text>
                 </Animated.View>
 
+                {/* Paused Icon */}
                 {!isRecording && <TouchableOpacity style={styles.recordingStopBtn} onPress={startRecording} >
                     <MaterialCommunity name={'pause'} size={80} color='white' />
                 </TouchableOpacity>
                 }
 
-                <Modals modalVisible={modalVisible} setModalVisible={setModalVisible} errorHead={'Redo Question ?'} errorDesc={'Are you sure you want to redo this question'} />
+                {/* Redo Modal */}
+                <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={redoModalVisible}>
 
+                    <View style={{ ...styles.modal, height, width }}>
+                        <Text style={styles.redoText}>Redo Question</Text>
+                        <View style={styles.icons}>
+                            <MaterialCommunity name={'check'} size={80} color='rgb(227, 89, 255)' onPress={async () => {
+                                redoRef.current = true
+                                setRedoModalVisible(false)
+                                try {
+                                    await ref.current.stopRecording();
+                                } catch (err) {
+                                    console.log(err)
+                                }
+                            }} />
+                            <Entypo name={'cross'} size={80} color='rgb(227, 89, 255)' onPress={async () => {
+                                setRedoModalVisible(false)
+                            }} />
+                        </View>
+                    </View>
+
+                </Modal>
+
+                {/* Uploading Modal */}
                 <Uploaded setVisible={setVisible} visible={visible} uploaded={uploaded} />
             </RNCamera>
         </Swipeable>
@@ -260,5 +275,22 @@ const styles = StyleSheet.create({
         // position:'absolute',
         // left:0,
         // right:0,
+    },
+    modal: {
+        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        // outline: 0,
+    },
+    redoText: {
+        color: 'rgb(227, 89, 255)',
+        fontSize: 40,
+        fontWeight: '800'
+    },
+    icons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 20,
+        width: '30%'
     }
 });
