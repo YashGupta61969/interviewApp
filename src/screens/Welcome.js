@@ -9,22 +9,26 @@ const Welcome = ({ route }) => {
     const isFocused = useIsFocused()
     const { link } = route.params;
     const documentId = link.split('data=')[1];
-    const { height, width } = useWindowDimensions()
+    const { height, width } = useWindowDimensions();
+    
     const [showInfo, setShowInfo] = useState(false)
     const [data, setData] = useState({})
     const [questions, setQuestions] = useState([])
-
+    
     useEffect(() => {
         firestore().collection('users').doc(documentId).get().then((res) => {
             const questions = res.data().questions.filter(que=>!que.answer);
-
+            
             setData(res.data())
             if(questions){
                 setQuestions(questions)
             }
-
+            
         }).catch(err => console.log(err))
     }, [isFocused]);
+
+    const Welcomemessage = link === 'empty' ? 'Thank You' : `WELCOME ${data.name?.toUpperCase()}`;
+
     // Returns Camera Screen Option When Questions Are Available 
     return (
         <>
@@ -46,8 +50,8 @@ const Welcome = ({ route }) => {
                 type='front'>
                 {
                     !showInfo && (link === 'empty' || questions.length === 0 ? <View style={styles.container}>
-                        <Text style={styles.welcomeText}>{link === 'empty' ? 'Thank You' : 'WELCOME'} {data.name?.toUpperCase()}</Text>
-                        <Text style={[styles.welcomeText, {marginTop: 20, fontSize: 19, paddingHorizontal: 10} ]}>You Have Completed Your Interview</Text>
+                        <Text style={styles.welcomeText}>{Welcomemessage}</Text>
+                        <Text style={[styles.welcomeText, styles.interviewCompleteText ]}>You Have Completed Your Interview</Text>
                     </View> : <View style={styles.container}>
                         <Text style={styles.welcomeText}>WELCOME</Text>
                         <Text style={styles.welcomeText}>{data.name?.toUpperCase()}</Text>
@@ -109,5 +113,10 @@ const styles = StyleSheet.create({
         fontSize: 25,
         fontWeight: '700',
         textAlign: 'center',
+    },
+    interviewCompleteText:{
+        marginTop: 20, 
+        fontSize: 19, 
+        paddingHorizontal: 10
     }
 })

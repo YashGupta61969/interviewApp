@@ -2,8 +2,7 @@ import { StyleSheet, View, Linking, useWindowDimensions, Text } from 'react-nati
 import React, { useRef } from 'react'
 import { RNCamera } from 'react-native-camera';
 
-const QRReader = ({ route }) => {
-    const { setLink } = route.params;
+const QRReader = () => {
     const { height, width } = useWindowDimensions()
     const ref = useRef()
 
@@ -11,7 +10,6 @@ const QRReader = ({ route }) => {
         if (event.type === RNCamera.Constants.BarCodeType.qr) {
             const check = event.data.substring(0, 4);
             if (check === 'http') {
-                setLink(event.data)
                 Linking
                     .openURL(event.data)
                     .catch(err => console.error('An error occured', err));
@@ -24,7 +22,7 @@ const QRReader = ({ route }) => {
             <RNCamera
                 ref={ref}
                 onBarCodeRead={onBarcodeDetected}
-                style={{ width, height, overflow: 'hidden', justifyContent: 'center' }}>
+                style={{...styles.cameraView, width, height}}>
                 <View style={[styles.markerStyle, { width: width / 3 + 30, height: width / 3 + 30 }]} />
 
                 <View style={{ position: 'absolute', right: 90 }}>
@@ -53,6 +51,10 @@ const styles = StyleSheet.create({
         textShadowColor: 'rgb(227, 89, 255)',
         textShadowOffset: { width: -5, height: -3 },
         textShadowRadius: 5,
+    },
+    cameraView:{
+        overflow: 'hidden', 
+        justifyContent: 'center'
     },
     markerStyle: {
         borderColor: 'rgb(227, 89, 255)',

@@ -59,7 +59,7 @@ const App = () => {
         {
           link ? <Stack.Screen name='Tabs' component={TabBarNavigation} initialParams={{ link }} />
            : <>
-            <Stack.Screen name='QR' component={QRReader} initialParams={{ setLink: setLink }} />
+            <Stack.Screen name='QR' component={QRReader} />
             <Stack.Screen name='Tabs' component={TabBarNavigation} initialParams={{ link }} />
           </>
         }
