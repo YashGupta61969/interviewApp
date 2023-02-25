@@ -1,36 +1,37 @@
 import { StyleSheet, View, Linking, useWindowDimensions, Text } from 'react-native'
 import React, { useRef } from 'react'
-import QRCodeScanner from 'react-native-qrcode-scanner'
+import { RNCamera } from 'react-native-camera';
 
 const QRReader = ({ route }) => {
     const { setLink } = route.params;
     const { height, width } = useWindowDimensions()
     const ref = useRef()
 
-    const onSuccess = ({ data }) => {
-        const check = data.substring(0, 4);
-        if (check === 'http') {
-            setLink(data)
-            Linking
-                .openURL(data)
-                .catch(err => console.error('An error occured', err));
+    const onBarcodeDetected = (event) => {
+        if (event.type === RNCamera.Constants.BarCodeType.qr) {
+            const check = event.data.substring(0, 4);
+            if (check === 'http') {
+                setLink(event.data)
+                Linking
+                    .openURL(event.data)
+                    .catch(err => console.error('An error occured', err));
+            }
         }
-    }
+    };
 
     return (
         <View style={styles.page}>
-            <QRCodeScanner
-                reactivate={true}
-                showMarker={true}
-                markerStyle={styles.markerStyle}
+            <RNCamera
                 ref={ref}
-                onRead={onSuccess}
-                cameraStyle={{ width, height }}
-            />
-            <View style={{position: 'absolute',left:90}}>
-            <Text style={styles.text}>SCAN</Text>
-            <Text style={styles.text}>QR CODE</Text>
-            </View>
+                onBarCodeRead={onBarcodeDetected}
+                style={{ width, height, overflow: 'hidden', justifyContent: 'center' }}>
+                <View style={[styles.markerStyle, { width: width / 3 + 30, height: width / 3 + 30 }]} />
+
+                <View style={{ position: 'absolute', right: 90 }}>
+                    <Text style={styles.text}>SCAN</Text>
+                    <Text style={styles.text}>QR CODE</Text>
+                </View>
+            </RNCamera>
         </View>
     )
 }
@@ -41,8 +42,8 @@ const styles = StyleSheet.create({
     page: {
         flex: 1,
         filter: 'grayscale(100%)',
-        flexDirection:'row-reverse',
-        alignItems:'center'
+        flexDirection: 'row-reverse',
+        alignItems: 'center'
     },
     text: {
         fontSize: 50,
@@ -58,6 +59,6 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         borderWidth: 4,
         position: 'absolute',
-        right:50
+        left: 50
     }
 })
