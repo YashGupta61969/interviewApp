@@ -52,7 +52,7 @@ const Camera = ({ route, navigation }) => {
             firestore().collection('users').doc(documentId).get().then((res) => {
                 setData(res.data())
             });
-    }, [isFocused, questionId]);
+    }, [isFocused, questionId, redoModalVisible]);
 
     // Translates Question Text From Center to Bottom With ANimation
     const translateY = position.interpolate({
@@ -170,8 +170,8 @@ const Camera = ({ route, navigation }) => {
         <Swipeable
             ref={swipeRef}
             onSwipeableOpen={onSwipeableOpen}
-            renderLeftActions={() => <View style={{ width: width / 2, backgroundColor: 'black' }} />}
-            renderRightActions={() => <View style={{ width: width / 2, backgroundColor: 'black' }} />}
+            renderLeftActions={() => <View style={{ width: width / 3, backgroundColor: 'black' }} />}
+            renderRightActions={() => <View style={{ width: width / 3, backgroundColor: 'black' }} />}
         >
             {/* Camera View */}
             <RNCamera
@@ -181,12 +181,12 @@ const Camera = ({ route, navigation }) => {
                 type='front'>
 
                 {/* Animated Text */}
-                <Animated.View style={[styles.question, { transform: [{ translateY }] }]} onLayout={onLayout}>
+                {!redoModalVisible && <Animated.View style={[styles.question, { transform: [{ translateY }] }]} onLayout={onLayout}>
                     <Animated.Text style={[styles.questionText, { fontSize }]}>{currentQuestion?.value}</Animated.Text>
-                </Animated.View>
+                </Animated.View>}
 
                 {/* Paused Icon */}
-                {!isRecording && <TouchableOpacity style={styles.recordingStopBtn} onPress={startRecording} >
+                {!redoModalVisible && !isRecording && <TouchableOpacity style={styles.recordingStopBtn} onPress={startRecording} >
                     <MaterialCommunity name={'pause'} size={80} color='white' />
                 </TouchableOpacity>
                 }
