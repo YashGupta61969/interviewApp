@@ -6,54 +6,54 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { useIsFocused } from '@react-navigation/native';
 
 const Welcome = ({ route }) => {
+    const isFocused = useIsFocused()
     const { link } = route.params;
     const documentId = link.split('data=')[1];
     const { height, width } = useWindowDimensions()
     const [showInfo, setShowInfo] = useState(false)
-    const isFocused = useIsFocused()
-
     const [data, setData] = useState({})
+    const [questions, setQuestions] = useState([])
 
     useEffect(() => {
         firestore().collection('users').doc(documentId).get().then((res) => {
-            const questionArray = Object.values(res.data().questions);
+            const questions = res.data().questions.filter(que=>!que.answer);
 
-            const newArr = questionArray.filter(curr => {
-                return !curr.answer
-            })
+            setData(res.data())
+            if(questions){
+                setQuestions(questions)
+            }
 
-            setData({ ...res.data(), questions: newArr })
-        }).catch(err=>console.log(err))
+        }).catch(err => console.log(err))
     }, [isFocused]);
     // Returns Camera Screen Option When Questions Are Available 
     return (
         <>
-                {!showInfo && <MaterialIcons name='info-outline' color='rgb(227, 89, 255)' size={40} style={styles.infoIcon} onPress={() => setShowInfo(true)} />}
+            {!showInfo && <MaterialIcons name='info-outline' color='rgb(227, 89, 255)' size={40} style={styles.infoIcon} onPress={() => setShowInfo(true)} />}
 
+            {
+                showInfo && <View style={styles.infoModal}>
+                    <MaterialIcons name='cancel' color='rgb(227, 89, 255)' size={40} style={styles.infoIcon} onPress={() => setShowInfo(false)} />
+                    <Text style={styles.infoText}>1. PREPARE YOUR FRAMING TO BE RECORDED</Text>
+                    <Text style={styles.infoText}>2. SWIPE &lt;--- TO ANSWER 1ST QUESTION</Text>
+                    <Text style={styles.infoText}>3. SWIPE &lt;--- EACH TIME FOR NEXT QUESTION</Text>
+                    <Text style={styles.infoText}>4. SIGN AND SWIPE &lt;--- TO SUBMIT</Text>
+                    <Text style={styles.infoText}>5. SWIPE ---&gt; TO REDO // TOUCH SCREEN TO PAUSE</Text>
+                </View>
+            }
+
+            <RNCamera
+                style={{ width, height, overflow: 'hidden' }}
+                type='front'>
                 {
-                    showInfo && <View style={styles.infoModal}>
-                        <MaterialIcons name='cancel' color='rgb(227, 89, 255)' size={40} style={styles.infoIcon} onPress={() => setShowInfo(false)} />
-                        <Text style={styles.infoText}>1. PREPARE YOUR FRAMING TO BE RECORDED</Text>
-                        <Text style={styles.infoText}>2. SWIPE &lt;--- TO ANSWER 1ST QUESTION</Text>
-                        <Text style={styles.infoText}>3. SWIPE &lt;--- EACH TIME FOR NEXT QUESTION</Text>
-                        <Text style={styles.infoText}>4. SIGN AND SWIPE &lt;--- TO SUBMIT</Text>
-                        <Text style={styles.infoText}>5. SWIPE ---&gt; TO REDO // TOUCH SCREEN TO PAUSE</Text>
-                    </View>
+                    !showInfo && (link === 'empty' || questions.length === 0 ? <View style={styles.container}>
+                        <Text style={styles.welcomeText}>{link === 'empty' ? 'Thank You' : 'WELCOME'} {data.name?.toUpperCase()}</Text>
+                        <Text style={[styles.welcomeText, {marginTop: 20, fontSize: 19, paddingHorizontal: 10} ]}>You Have Completed Your Interview</Text>
+                    </View> : <View style={styles.container}>
+                        <Text style={styles.welcomeText}>WELCOME</Text>
+                        <Text style={styles.welcomeText}>{data.name?.toUpperCase()}</Text>
+                    </View>)
                 }
-
-                <RNCamera
-                    style={{ width, height, overflow: 'hidden' }}
-                    type='front'>
-                    {
-                        !showInfo && (link === 'empty' || !(data && Array.isArray(data.questions) && data.questions.length >= 1) ? <View style={styles.container}>
-                            <Text style={styles.welcomeText}>WELCOME {data.name?.toUpperCase()}</Text>
-                            <Text style={{ ...styles.welcomeText, marginTop: 20, fontSize: 19, paddingHorizontal: 10 }}>You Have Already Completed Your Interview</Text>
-                        </View> : <View style={styles.container}>
-                            <Text style={styles.welcomeText}>WELCOME</Text>
-                            <Text style={styles.welcomeText}>{data.name?.toUpperCase()}</Text>
-                        </View>)
-                    }
-                </RNCamera>
+            </RNCamera>
         </>
     )
 }
