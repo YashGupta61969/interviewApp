@@ -15,6 +15,8 @@
 		7699B88040F8A987B510C191 /* libPods-interviewApp-interviewAppTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-interviewApp-interviewAppTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		659A33187E87452BAEFC21DF /* Walkway-Condensed Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EDE39CE9CFBF4A2D90618505 /* Walkway-Condensed Bold.ttf */; };
+		EBF8A9AA358C41EAB1763231 /* PTSansNarrow-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 883D548CA2604DD98552B113 /* PTSansNarrow-Bold.ttf */; };
+		F408CE9F38AB42E88A7C3BF8 /* PTSansNarrow-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 005CED10C1984FE6A1DDA66E /* PTSansNarrow-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +48,8 @@
 		89C6BE57DB24E9ADA2F236DE /* Pods-interviewApp-interviewAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-interviewApp-interviewAppTests.release.xcconfig"; path = "Target Support Files/Pods-interviewApp-interviewAppTests/Pods-interviewApp-interviewAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		EDE39CE9CFBF4A2D90618505 /* Walkway-Condensed Bold.ttf */ = {isa = PBXFileReference; name = "Walkway-Condensed Bold.ttf"; path = "../assets/fonts/Walkway-Condensed Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		883D548CA2604DD98552B113 /* PTSansNarrow-Bold.ttf */ = {isa = PBXFileReference; name = "PTSansNarrow-Bold.ttf"; path = "../assets/fonts/PTSansNarrow-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		005CED10C1984FE6A1DDA66E /* PTSansNarrow-Regular.ttf */ = {isa = PBXFileReference; name = "PTSansNarrow-Regular.ttf"; path = "../assets/fonts/PTSansNarrow-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +159,8 @@
 			isa = "PBXGroup";
 			children = (
 				EDE39CE9CFBF4A2D90618505 /* Walkway-Condensed Bold.ttf */,
+				883D548CA2604DD98552B113 /* PTSansNarrow-Bold.ttf */,
+				005CED10C1984FE6A1DDA66E /* PTSansNarrow-Regular.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -257,6 +263,8 @@
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				659A33187E87452BAEFC21DF /* Walkway-Condensed Bold.ttf in Resources */,
+				EBF8A9AA358C41EAB1763231 /* PTSansNarrow-Bold.ttf in Resources */,
+				F408CE9F38AB42E88A7C3BF8 /* PTSansNarrow-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

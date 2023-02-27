@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
 import { RNCamera } from 'react-native-camera';
 import firestore from '@react-native-firebase/firestore';
-import Uploaded from '../components/Uploaded';
+import UploadedModal from '../components/UploadedModal';
 import { useIsFocused } from '@react-navigation/native';
 import { Swipeable } from 'react-native-gesture-handler';
 import Entypo from 'react-native-vector-icons/Entypo'
@@ -69,7 +69,6 @@ const Camera = ({ route, navigation }) => {
         }
         setVisible(true)
 
-
         try {
             const form = new FormData()
             form.append('video', {
@@ -80,13 +79,13 @@ const Camera = ({ route, navigation }) => {
             form.append('documentId', documentId)
 
             const response = await fetch('http://142.93.219.133/video-app/', {
-                // const response = await fetch('http://192.168.1.15:4004/video-app/', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                 },
                 body: form
             });
+
             console.log(await response.json())
 
             setUploaded(true)
@@ -209,16 +208,15 @@ const Camera = ({ route, navigation }) => {
                                     console.log(err)
                                 }
                             }} />
-                            <Entypo name={'cross'} size={80} color='rgb(227, 89, 255)' onPress={async () => {
+                            <Entypo name={'cross'} size={80} color='rgb(227, 89, 255)' onPress={() => {
                                 setRedoModalVisible(false)
                             }} />
                         </View>
                     </View>
-
                 </Modal>
 
                 {/* Uploading Modal */}
-                <Uploaded setVisible={setVisible} visible={visible} uploaded={uploaded} />
+                <UploadedModal setVisible={setVisible} visible={visible} uploaded={uploaded} />
             </RNCamera>
         </Swipeable>
     )
@@ -233,8 +231,6 @@ const styles = StyleSheet.create({
     },
     question: {
         width: '100%',
-        // justifyContent: 'center',
-        // alignItems: 'center',
         paddingHorizontal: 8,
     },
     recordingStopBtn: {
@@ -251,30 +247,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    btns: {
-        position: 'absolute',
-        bottom: 20,
-        left: 20,
-        right: 20,
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
-    btn: {
-        backgroundColor: 'blue',
-        paddingVertical: 6,
-        paddingHorizontal: 20,
-        borderRadius: 5
-    },
     questionText: {
         color: 'white',
-        fontWeight: '700',
+        // fontWeight: '700',
+        fontFamily:'PTSansNarrow-Bold',
         textAlign: 'center',
+        fontSize:60,
         textShadowColor: 'rgb(227, 89, 255)',
         textShadowOffset: { width: -5, height: -3 },
         textShadowRadius: 5,
-        // position:'absolute',
-        // left:0,
-        // right:0,
     },
     modal: {
         backgroundColor: 'rgba(255, 255, 255, 0.5)',
@@ -285,7 +266,8 @@ const styles = StyleSheet.create({
     redoText: {
         color: 'rgb(227, 89, 255)',
         fontSize: 40,
-        fontWeight: '800'
+        // fontWeight: '800'
+        fontFamily:'PTSansNarrow-Bold'
     },
     icons: {
         flexDirection: 'row',

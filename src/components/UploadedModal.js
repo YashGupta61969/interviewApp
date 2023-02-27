@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, useWindowDimensions, Modal, ActivityIndicator, TouchableOpacity} from 'react-native'
 import React from 'react'
 
-const Uploaded = ({ visible, setVisible, uploaded }) => {
+const UploadedModal = ({ visible, setVisible, uploaded }) => {
     const { height, width } = useWindowDimensions();
 
     return (
@@ -13,27 +13,15 @@ const Uploaded = ({ visible, setVisible, uploaded }) => {
 
             <View style={{ ...styles.modal, height, width }}>
                 <View style={styles.modal_content}>
-
-                    {!uploaded && <><Text style={{ color: 'black', fontSize: 22, marginBottom: 15 }}>Uploading</Text>
+                    {!uploaded && <><Text style={styles.uploadedText}>Uploading</Text>
                         <ActivityIndicator size={38} color='rgb(227, 89, 255)' /></>}
-
-                    {
-                        uploaded && <View>
-                            <Text style={{ color: 'black', fontSize: 22, marginBottom: 15, textAlign: 'center' }}>Uploaded</Text>
-                            <TouchableOpacity onPress={() => { setVisible(false) }} style={{ backgroundColor: 'blue', paddingVertical: 6, borderRadius: 8, width: 200 }}>
-                                <Text style={{ fontSize: 18, textAlign: 'center', color: 'white' }}>Okay</Text>
-                            </TouchableOpacity>
-                        </View>
-                    }
-
                 </View>
             </View>
         </Modal>
-
     )
 }
 
-export default Uploaded
+export default UploadedModal
 
 const styles = StyleSheet.create({
     modal: {
@@ -51,5 +39,11 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 8
     },
-
+    uploadedText:{
+        color: 'black', 
+        fontSize: 26, 
+        marginBottom: 15,
+        letterSpacing:1,
+        fontFamily:'PTSansNarrow-Bold'
+    }
 })

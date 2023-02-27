@@ -54,6 +54,8 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>Walkway-Condensed Bold.ttf</string>
+		<string>PTSansNarrow-Bold.ttf</string>
+		<string>PTSansNarrow-Regular.ttf</string>
 	</array>
 </dict>
 </plist>

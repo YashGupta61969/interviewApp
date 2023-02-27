@@ -32,7 +32,7 @@ const Welcome = ({ route }) => {
     // Returns Camera Screen Option When Questions Are Available 
     return (
         <>
-            {!showInfo && <MaterialIcons name='info-outline' color='rgb(227, 89, 255)' size={40} style={styles.infoIcon} onPress={() => setShowInfo(true)} />}
+            {!showInfo && <MaterialIcons name='menu' color='rgb(227, 89, 255)' size={40} style={styles.infoIcon} onPress={() => setShowInfo(true)} />}
 
             {
                 showInfo && <View style={styles.infoModal}>
@@ -72,24 +72,14 @@ const styles = StyleSheet.create({
     },
     welcomeText: {
         color: 'white',
-        fontSize: 50,
-        fontWeight: '700',
+        fontSize: 60,
+        // fontWeight: '700',
+        fontFamily:'PTSansNarrow-Bold',
         textAlign: 'center',
+        letterSpacing:2,
         textShadowColor: 'rgb(227, 89, 255)',
         textShadowOffset: { width: -4, height: -2 },
         textShadowRadius: 5
-    },
-    btn: {
-        paddingHorizontal: 15,
-        paddingVertical: 2,
-        borderRadius: 3,
-        marginTop: 18,
-        backgroundColor: 'green'
-    },
-    btnText: {
-        fontSize: 23,
-        fontWeight: '400',
-        color: 'white',
     },
     infoIcon: {
         zIndex: 500,
@@ -110,8 +100,9 @@ const styles = StyleSheet.create({
     },
     infoText: {
         color: 'rgb(237, 100, 255)',
-        fontSize: 25,
-        fontWeight: '700',
+        fontSize: 30,
+        // fontWeight: '700',
+        fontFamily:'PTSansNarrow-Bold',
         textAlign: 'center',
     },
     interviewCompleteText:{
