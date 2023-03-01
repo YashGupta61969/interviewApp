@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
 import { RNCamera } from 'react-native-camera';
 import firestore from '@react-native-firebase/firestore';
-import Uploaded from '../components/Uploaded';
+import UploadedModal from '../components/UploadedModal';
 import { useIsFocused } from '@react-navigation/native';
 import { Swipeable } from 'react-native-gesture-handler';
 import Entypo from 'react-native-vector-icons/Entypo'
@@ -87,6 +87,7 @@ const Camera = ({ route, navigation }) => {
                 },
                 body: form
             });
+
             console.log(await response.json())
 
             setUploaded(true)
@@ -209,16 +210,15 @@ const Camera = ({ route, navigation }) => {
                                     console.log(err)
                                 }
                             }} />
-                            <Entypo name={'cross'} size={80} color='rgb(227, 89, 255)' onPress={async () => {
+                            <Entypo name={'cross'} size={80} color='rgb(227, 89, 255)' onPress={() => {
                                 setRedoModalVisible(false)
                             }} />
                         </View>
                     </View>
-
                 </Modal>
 
                 {/* Uploading Modal */}
-                <Uploaded setVisible={setVisible} visible={visible} uploaded={uploaded} />
+                <UploadedModal setVisible={setVisible} visible={visible} uploaded={uploaded} />
             </RNCamera>
         </Swipeable>
     )
@@ -249,23 +249,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    btns: {
-        position: 'absolute',
-        bottom: 20,
-        left: 20,
-        right: 20,
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
-    btn: {
-        backgroundColor: 'blue',
-        paddingVertical: 6,
-        paddingHorizontal: 20,
-        borderRadius: 5
-    },
     questionText: {
         color: 'white',
         textAlign: 'center',
+        fontSize:60,
         textShadowColor: 'rgb(227, 89, 255)',
         textShadowOffset: { width: -5, height: -3 },
         textShadowRadius: 5,

@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
         fontSize: 50,
         fontFamily:'BarlowCondensed-SemiBold',
         textAlign: 'center',
+        letterSpacing:2,
         textShadowColor: 'rgb(227, 89, 255)',
         textShadowOffset: { width: -3, height: -2 },
         textShadowRadius: 5,
