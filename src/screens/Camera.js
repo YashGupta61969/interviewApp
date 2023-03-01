@@ -19,7 +19,7 @@ const Camera = ({ route, navigation }) => {
     const documentId = link.split('data=')[1];
 
     const [position] = useState(new Animated.Value(0));
-    const [fontSize] = useState(new Animated.Value(36));
+    const [fontSize] = useState(new Animated.Value(45));
     const [uploaded, setUploaded] = useState(false)
     const [visible, setVisible] = useState(false)
     const [paused, setPaused] = useState(false)
@@ -31,7 +31,7 @@ const Camera = ({ route, navigation }) => {
 
     useEffect(() => {
         position.setValue(0)
-        fontSize.setValue(36)
+        fontSize.setValue(44)
 
         // Text Animations
         Animated.timing(position, {
@@ -42,7 +42,7 @@ const Camera = ({ route, navigation }) => {
         }).start(),
 
             Animated.timing(fontSize, {
-                toValue: 20,
+                toValue: 28,
                 duration: 1500,
                 delay: 2500,
                 useNativeDriver: false,
@@ -252,10 +252,9 @@ const styles = StyleSheet.create({
     questionText: {
         color: 'white',
         textAlign: 'center',
-        fontSize:60,
         textShadowColor: 'rgb(227, 89, 255)',
-        textShadowOffset: { width: -5, height: -3 },
-        textShadowRadius: 5,
+        textShadowOffset: { width: 4, height: 4 },
+        textShadowRadius: 10,
         fontFamily:'BarlowCondensed-SemiBold',
     },
     modal: {
