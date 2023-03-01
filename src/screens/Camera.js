@@ -69,7 +69,6 @@ const Camera = ({ route, navigation }) => {
         }
         setVisible(true)
 
-
         try {
             const form = new FormData()
             form.append('video', {
@@ -79,8 +78,9 @@ const Camera = ({ route, navigation }) => {
             })
             form.append('documentId', documentId)
 
-            const response = await fetch('http://142.93.219.133/video-app/', {
-                // const response = await fetch('http://192.168.1.15:4004/video-app/', {
+            const requestUrl = 'http://142.93.219.133/video-app/';
+
+            const response = await fetch(requestUrl, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -233,8 +233,6 @@ const styles = StyleSheet.create({
     },
     question: {
         width: '100%',
-        // justifyContent: 'center',
-        // alignItems: 'center',
         paddingHorizontal: 8,
     },
     recordingStopBtn: {
@@ -267,25 +265,21 @@ const styles = StyleSheet.create({
     },
     questionText: {
         color: 'white',
-        fontWeight: '700',
         textAlign: 'center',
         textShadowColor: 'rgb(227, 89, 255)',
         textShadowOffset: { width: -5, height: -3 },
         textShadowRadius: 5,
-        // position:'absolute',
-        // left:0,
-        // right:0,
+        fontFamily:'BarlowCondensed-SemiBold',
     },
     modal: {
-        backgroundColor: 'rgba(255, 255, 255, 0.5)',
+        backgroundColor: 'rgba(255, 255, 255, 0.4)',
         justifyContent: 'center',
         alignItems: 'center',
-        // outline: 0,
     },
     redoText: {
         color: 'rgb(227, 89, 255)',
         fontSize: 40,
-        fontWeight: '800'
+        fontFamily:'BarlowCondensed-SemiBold',
     },
     icons: {
         flexDirection: 'row',

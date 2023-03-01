@@ -25,7 +25,7 @@ const QRReader = () => {
                 style={{...styles.cameraView, width, height}}>
                 <View style={[styles.markerStyle, { width: width / 3 + 30, height: width / 3 + 30 }]} />
 
-                <View style={{ position: 'absolute', right: 90 }}>
+                <View style={{ position: 'absolute', right: 90, width:190 }}>
                     <Text style={styles.text}>SCAN</Text>
                     <Text style={styles.text}>QR CODE</Text>
                 </View>
@@ -46,11 +46,11 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 50,
         color: 'white',
-        fontWeight: '700',
         textAlign: 'center',
         textShadowColor: 'rgb(227, 89, 255)',
         textShadowOffset: { width: -5, height: -3 },
         textShadowRadius: 5,
+        fontFamily:'BarlowCondensed-SemiBold',
     },
     cameraView:{
         overflow: 'hidden', 

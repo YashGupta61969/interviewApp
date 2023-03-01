@@ -32,7 +32,7 @@ const Welcome = ({ route }) => {
     // Returns Camera Screen Option When Questions Are Available 
     return (
         <>
-            {!showInfo && <MaterialIcons name='info-outline' color='rgb(227, 89, 255)' size={40} style={styles.infoIcon} onPress={() => setShowInfo(true)} />}
+            {!showInfo && <MaterialIcons name='menu' color='rgb(227, 89, 255)' size={40} style={styles.infoIcon} onPress={() => setShowInfo(true)} />}
 
             {
                 showInfo && <View style={styles.infoModal}>
@@ -51,7 +51,7 @@ const Welcome = ({ route }) => {
                 {
                     !showInfo && (link === 'empty' || questions.length === 0 ? <View style={styles.container}>
                         <Text style={styles.welcomeText}>{Welcomemessage}</Text>
-                        <Text style={[styles.welcomeText, styles.interviewCompleteText ]}>You Have Completed Your Interview</Text>
+                        <Text style={styles.interviewCompleteText}>You Have Completed Your Interview</Text>
                     </View> : <View style={styles.container}>
                         <Text style={styles.welcomeText}>WELCOME</Text>
                         <Text style={styles.welcomeText}>{data.name?.toUpperCase()}</Text>
@@ -73,28 +73,16 @@ const styles = StyleSheet.create({
     welcomeText: {
         color: 'white',
         fontSize: 50,
-        fontWeight: '700',
+        fontFamily:'BarlowCondensed-SemiBold',
         textAlign: 'center',
         textShadowColor: 'rgb(227, 89, 255)',
-        textShadowOffset: { width: -4, height: -2 },
-        textShadowRadius: 5
-    },
-    btn: {
-        paddingHorizontal: 15,
-        paddingVertical: 2,
-        borderRadius: 3,
-        marginTop: 18,
-        backgroundColor: 'green'
-    },
-    btnText: {
-        fontSize: 23,
-        fontWeight: '400',
-        color: 'white',
+        textShadowOffset: { width: -3, height: -2 },
+        textShadowRadius: 5,
     },
     infoIcon: {
         zIndex: 500,
         position: 'absolute',
-        right: 10,
+        right: 20,
         top: 10
     },
     infoModal: {
@@ -110,13 +98,18 @@ const styles = StyleSheet.create({
     },
     infoText: {
         color: 'rgb(237, 100, 255)',
-        fontSize: 25,
-        fontWeight: '700',
+        fontSize: 30,
         textAlign: 'center',
+        fontFamily:'BarlowCondensed-SemiBold',
     },
     interviewCompleteText:{
         marginTop: 20, 
         fontSize: 19, 
-        paddingHorizontal: 10
+        paddingHorizontal: 10,
+        color:'white',
+        fontFamily:'BarlowCondensed-SemiBold',
+        textShadowColor: 'rgb(227, 89, 255)',
+        textShadowOffset: { width: -2, height: -1 },
+        textShadowRadius: 5,
     }
 })
