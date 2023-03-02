@@ -7,6 +7,8 @@ import UploadedModal from '../components/UploadedModal';
 import { useIsFocused } from '@react-navigation/native';
 import { Swipeable } from 'react-native-gesture-handler';
 import Entypo from 'react-native-vector-icons/Entypo'
+import { useDispatch } from 'react-redux';
+import { updateIsCompleted } from '../store/slices/userSlice';
 
 const Camera = ({ route, navigation }) => {
 
@@ -17,6 +19,7 @@ const Camera = ({ route, navigation }) => {
     const { link, questionId } = route.params;
     const isFocused = useIsFocused();
     const documentId = link.split('data=')[1];
+    const dispatch = useDispatch()
 
     const [position] = useState(new Animated.Value(0));
     const [fontSize] = useState(new Animated.Value(45));
@@ -31,7 +34,7 @@ const Camera = ({ route, navigation }) => {
 
     useEffect(() => {
         position.setValue(0)
-        fontSize.setValue(44)
+        fontSize.setValue(50)
 
         // Text Animations
         Animated.timing(position, {
@@ -42,7 +45,7 @@ const Camera = ({ route, navigation }) => {
         }).start(),
 
             Animated.timing(fontSize, {
-                toValue: 28,
+                toValue: 26,
                 duration: 1500,
                 delay: 2500,
                 useNativeDriver: false,
@@ -98,7 +101,7 @@ const Camera = ({ route, navigation }) => {
 
             // Checks if There are more questions. If none, then navigqate to Welcome Screen, else display next question
             if (questionId + 1 === questionsLength || !areMoreQuestionas) {
-                Alert.alert('Completed', 'Your Response Has Been Submitted')
+                dispatch(updateIsCompleted(true))
                 navigation.navigate('Welcome', { link: 'empty' })
             } else {
                 navigation.navigate(`Camera${questionId + 1}`)
@@ -247,6 +250,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         alignSelf: 'center',
         justifyContent: 'center',
+        zIndex:5,
         alignItems: 'center'
     },
     questionText: {
@@ -255,7 +259,8 @@ const styles = StyleSheet.create({
         textShadowColor: 'rgb(227, 89, 255)',
         textShadowOffset: { width: 4, height: 4 },
         textShadowRadius: 10,
-        fontFamily:'BarlowCondensed-SemiBold',
+        zIndex:8,
+        fontFamily: 'BarlowCondensed-SemiBold',
     },
     modal: {
         backgroundColor: 'rgba(255, 255, 255, 0.4)',
@@ -265,7 +270,7 @@ const styles = StyleSheet.create({
     redoText: {
         color: 'rgb(227, 89, 255)',
         fontSize: 40,
-        fontFamily:'BarlowCondensed-SemiBold',
+        fontFamily: 'BarlowCondensed-SemiBold',
     },
     icons: {
         flexDirection: 'row',

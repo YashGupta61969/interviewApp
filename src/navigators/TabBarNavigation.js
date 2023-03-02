@@ -4,21 +4,33 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import firestore from '@react-native-firebase/firestore';
 import Camera from '../screens/Camera';
 import Welcome from '../screens/Welcome';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { updateIsCompleted } from '../store/slices/userSlice';
 
 const Tab = createMaterialTopTabNavigator();
 
 const TabBarNavigation = ({ route }) => {
+    const {isCompleted} = useSelector(state=>state.user)
     const { link } = route.params;
     const documentId = link.split('data=')[1];
     const [questions, setQuestions] = useState([])
     const [loading, setLoading] = useState(false)
+    const dispatch = useDispatch()
 
     useEffect(() => {
         setLoading(true)
         firestore().collection('users').doc(documentId).get().then((res) => {
 
-            if (res.data().questions) {
-                setQuestions(res.data().questions.filter(que => !que.answer))
+            if (res.data().questions.length) {
+                const filteredArr = res.data().questions.filter(que => !que.answer)
+                setQuestions(filteredArr)
+
+                if(filteredArr){
+                    dispatch(updateIsCompleted(false))
+                }else{
+                    dispatch(updateIsCompleted(true))
+                }
             }
             setLoading(false)
         })
@@ -30,22 +42,11 @@ const TabBarNavigation = ({ route }) => {
         </View>
     }
 
-    // Checks if all questions are answered or not
-    const isSwipeEnabled = (direction) => {
-        if (!questions) {
-            return false
-        } else if (direction === 'right') {
-            // disable swiping from left to right
-            return false;
-        }
-        return true;
-    };
-
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <Tab.Navigator backBehavior='none' screenOptions={{
                 tabBarStyle: { display: 'none' },
-                swipeEnabled: isSwipeEnabled
+                swipeEnabled: !isCompleted
             }}>
                 <Tab.Screen name={`Welcome`} component={Welcome} initialParams={{ link }} />
                 {

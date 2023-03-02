@@ -7,6 +7,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import TabBarNavigation from './src/navigators/TabBarNavigation';
 import Orientation from 'react-native-orientation-locker';
+import { Provider } from 'react-redux';
+import store from './src/store/store';
 
 const Stack = createNativeStackNavigator()
 
@@ -19,18 +21,18 @@ const App = () => {
   const handleDynamicLink = link => {
     if (link) {
       dynamicLinks().getInitialLink().then(() => {
-          setLink(link.url)
-        });
+        setLink(link.url)
+      });
     }
   }
 
   useEffect(() => {
     Orientation.lockToLandscape();
     dynamicLinks().getInitialLink().then(link => {
-        if (link && link.url) {
-          setLink(link.url)
-        }
-      });
+      if (link && link.url) {
+        setLink(link.url)
+      }
+    });
 
     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
     return () => unsubscribe();
@@ -47,24 +49,24 @@ const App = () => {
   }
 
   return <GestureHandlerRootView style={{ flex: 1 }}>
-
-    <NavigationContainer>
-      <Stack.Navigator ges screenOptions={{
-        headerShown: false,
-        animation: 'slide_from_right',
-        gestureDirection: 'vertical',
-        unmountOnBlur: true,
-      }}>
-        {
-          link ? <Stack.Screen name='Tabs' component={TabBarNavigation} initialParams={{ link }} />
-           : <>
-            <Stack.Screen name='QR' component={QRReader} />
-            <Stack.Screen name='Tabs' component={TabBarNavigation} initialParams={{ link }} />
-          </>
-        }
-      </Stack.Navigator>
-    </NavigationContainer>
-
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator ges screenOptions={{
+          headerShown: false,
+          animation: 'slide_from_right',
+          gestureDirection: 'vertical',
+          unmountOnBlur: true,
+        }}>
+          {
+            link ? <Stack.Screen name='Tabs' component={TabBarNavigation} initialParams={{ link }} />
+              : <>
+                <Stack.Screen name='QR' component={QRReader} />
+                <Stack.Screen name='Tabs' component={TabBarNavigation} initialParams={{ link }} />
+              </>
+          }
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   </GestureHandlerRootView>
 }
 

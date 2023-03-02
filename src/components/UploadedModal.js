@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
         color: 'black', 
         fontSize: 26, 
         marginBottom: 15,
-        letterSpacing:1,
-        fontFamily:'BarlowCondensed-Bold'
+        fontFamily:'BarlowCondensed-Medium'
     }
 })

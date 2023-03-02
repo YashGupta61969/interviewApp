@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     text: {
-        fontSize: 50,
+        fontSize: 55,
         color: 'white',
         textAlign: 'center',
         letterSpacing:1,
