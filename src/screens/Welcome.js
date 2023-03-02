@@ -1,4 +1,4 @@
-import { StyleSheet, Text, useWindowDimensions, View } from 'react-native'
+import { StyleSheet, Text, useWindowDimensions, View, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import firestore from '@react-native-firebase/firestore';
 import { RNCamera } from 'react-native-camera';
@@ -14,8 +14,10 @@ const Welcome = ({ route }) => {
     const [showInfo, setShowInfo] = useState(false)
     const [data, setData] = useState({})
     const [questions, setQuestions] = useState([])
+    const [loading, setLoading] = useState(false)
     
     useEffect(() => {
+        setLoading(true)
         firestore().collection('users').doc(documentId).get().then((res) => {
             const questions = res.data().questions.filter(que=>!que.answer);
             
@@ -24,11 +26,16 @@ const Welcome = ({ route }) => {
                 setQuestions(questions)
             }
             
-        }).catch(err => console.log(err))
+        }).catch(err => console.log(err)).finally(()=>setLoading(false))
     }, [isFocused]);
 
-    const Welcomemessage = link === 'empty' ? 'Thank You' : `WELCOME ${data.name?.toUpperCase()}`;
-
+    if (loading) {
+        return <View style={{ width, height, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size={'large'} color={'rgb(227, 89, 255)'}/>
+        </View>
+      }
+      
+      const welcomeMessage = link === 'empty' ? 'Thank You' : `WELCOME ${data.name?.toUpperCase()}`;
     // Returns Camera Screen Option When Questions Are Available 
     return (
         <>
@@ -50,7 +57,7 @@ const Welcome = ({ route }) => {
                 type='front'>
                 {
                     !showInfo && (link === 'empty' || questions.length === 0 ? <View style={styles.container}>
-                        <Text style={styles.welcomeText}>{Welcomemessage}</Text>
+                        <Text style={styles.welcomeText}>{welcomeMessage}</Text>
                         <Text style={styles.interviewCompleteText}>You Have Completed Your Interview</Text>
                     </View> : <View style={styles.container}>
                         <Text style={styles.welcomeText}>WELCOME</Text>

@@ -14,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "246930436214-5lhibm1ivjb8doohsbbg2m7fqbu79i2s.apps.googleusercontent.com",
+          "client_id": "246930436214-103af6vu0m3j7f8d6n0sbpnb07grvflk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.interviewapptest",
+            "certificate_hash": "98600fcd895a3d8cddd34059782fee5f125a993e"
+          }
+        },
+        {
+          "client_id": "246930436214-7svi7j8lgcfd492b5ma2djbdi24kkhvh.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.interviewapptest",
