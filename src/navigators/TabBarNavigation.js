@@ -7,6 +7,7 @@ import Welcome from '../screens/Welcome';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { updateIsCompleted } from '../store/slices/userSlice';
+import colors from '../constants/colors';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -38,7 +39,7 @@ const TabBarNavigation = ({ route }) => {
 
     if (loading) {
         return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'black' }}>
-            <ActivityIndicator size={'large'} color={'rgb(227, 89, 255)'} />
+            <ActivityIndicator size={'large'} color={colors.primary} />
         </View>
     }
 
