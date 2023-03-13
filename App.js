@@ -9,6 +9,7 @@ import TabBarNavigation from './src/navigators/TabBarNavigation';
 import Orientation from 'react-native-orientation-locker';
 import { Provider } from 'react-redux';
 import store from './src/store/store';
+import UploadScreen from './src/screens/UploadScreen';
 
 const Stack = createNativeStackNavigator()
 
@@ -58,10 +59,15 @@ const App = () => {
           unmountOnBlur: true,
         }}>
           {
-            link ? <Stack.Screen name='Tabs' component={TabBarNavigation} initialParams={{ link }} />
+            link ?
+              <>
+                <Stack.Screen name='Tabs' component={TabBarNavigation} initialParams={{ link }} />
+                <Stack.Screen name='Upload' component={UploadScreen} />
+              </>
               : <>
                 <Stack.Screen name='QR' component={QRReader} />
-                <Stack.Screen name='Tabs' component={TabBarNavigation} initialParams={{ link }} />
+                <Stack.Screen name='Tabs' component={UploadScreen} />
+                <Stack.Screen name='Upload' component={TabBarNavigation} initialParams={{ link }} />
               </>
           }
         </Stack.Navigator>

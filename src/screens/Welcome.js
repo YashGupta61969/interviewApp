@@ -4,6 +4,7 @@ import firestore from '@react-native-firebase/firestore';
 import { RNCamera } from 'react-native-camera';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { useIsFocused } from '@react-navigation/native';
+import colors from '../constants/colors';
 
 const Welcome = ({ route }) => {
     const isFocused = useIsFocused()
@@ -13,25 +14,27 @@ const Welcome = ({ route }) => {
     
     const [showInfo, setShowInfo] = useState(false)
     const [data, setData] = useState({})
-    const [questions, setQuestions] = useState([])
+    const [areQuestionsAvailable, setAreQuestionsAvailable ] = useState(true)
     const [loading, setLoading] = useState(false)
     
     useEffect(() => {
-        setLoading(true)
-        firestore().collection('users').doc(documentId).get().then((res) => {
-            const questions = res.data().questions.filter(que=>!que.answer);
-            
-            setData(res.data())
-            if(questions){
-                setQuestions(questions)
-            }
-            
-        }).catch(err => console.log(err)).finally(()=>setLoading(false))
-    }, [isFocused]);
+        if(isFocused){
+            setLoading(true)
+            firestore().collection('users').doc(documentId).get().then((res) => {
+                const questions = res.data().questions.filter(que=>!que.answer);
+                
+                setData(res.data())
+                if(questions.length){
+                    setAreQuestionsAvailable(true)
+                }
+                
+            }).catch(err => console.log(err)).finally(()=>setLoading(false))
+        }
+    }, [isFocused, link]);
 
     if (loading) {
         return <View style={{ width, height, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size={'large'} color={'rgb(227, 89, 255)'}/>
+          <ActivityIndicator size={'large'} color={colors.primary}/>
         </View>
       }
       
@@ -39,11 +42,11 @@ const Welcome = ({ route }) => {
     // Returns Camera Screen Option When Questions Are Available 
     return (
         <>
-            {!showInfo && <MaterialIcons name='menu' color='rgb(227, 89, 255)' size={40} style={styles.infoIcon} onPress={() => setShowInfo(true)} />}
+            {!showInfo && <MaterialIcons name='menu' color={colors.primary} size={40} style={styles.infoIcon} onPress={() => setShowInfo(true)} />}
 
             {
                 showInfo && <View style={styles.infoModal}>
-                    <MaterialIcons name='cancel' color='rgb(227, 89, 255)' size={40} style={styles.infoIcon} onPress={() => setShowInfo(false)} />
+                    <MaterialIcons name='cancel' color={colors.primary} size={40} style={styles.infoIcon} onPress={() => setShowInfo(false)} />
                     <Text style={styles.infoText}>1. PREPARE YOUR FRAMING TO BE RECORDED</Text>
                     <Text style={styles.infoText}>2. SWIPE &lt;--- TO ANSWER 1ST QUESTION</Text>
                     <Text style={styles.infoText}>3. SWIPE &lt;--- EACH TIME FOR NEXT QUESTION</Text>
@@ -56,7 +59,7 @@ const Welcome = ({ route }) => {
                 style={{ width, height, overflow: 'hidden' }}
                 type='front'>
                 {
-                    !showInfo && (link === 'empty' || questions.length === 0 ? <View style={styles.container}>
+                    !showInfo && (link === 'empty' || !areQuestionsAvailable  ? <View style={styles.container}>
                         <Text style={styles.welcomeText}>{welcomeMessage}</Text>
                         <Text style={styles.interviewCompleteText}>You Have Completed Your Interview</Text>
                     </View> : <View style={styles.container}>
@@ -83,7 +86,7 @@ const styles = StyleSheet.create({
         fontFamily:'BarlowCondensed-SemiBold',
         textAlign: 'center',
         letterSpacing:2,
-        textShadowColor: 'rgb(227, 89, 255)',
+        textShadowColor: colors.primary,
         textShadowOffset: { width: -3, height: -2 },
         textShadowRadius: 5,
     },
@@ -105,7 +108,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     infoText: {
-        color: 'rgb(237, 100, 255)',
+        color: colors.primary,
         fontSize: 35,
         textAlign: 'center',
         fontFamily:'BarlowCondensed-Medium',
@@ -116,7 +119,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         color:'white',
         fontFamily:'BarlowCondensed-Medium',
-        textShadowColor: 'rgb(227, 89, 255)',
+        textShadowColor: colors.primary,
         textShadowOffset: { width: -2, height: -1 },
         textShadowRadius: 5,
     }

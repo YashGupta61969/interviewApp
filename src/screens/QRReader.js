@@ -1,6 +1,7 @@
 import { StyleSheet, View, Linking, useWindowDimensions, Text } from 'react-native'
 import React, { useRef } from 'react'
 import { RNCamera } from 'react-native-camera';
+import colors from '../constants/colors';
 
 const QRReader = () => {
     const { height, width } = useWindowDimensions()
@@ -47,7 +48,7 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlign: 'center',
         letterSpacing:1,
-        textShadowColor: 'rgb(227, 89, 255)',
+        textShadowColor: colors.primary,
         textShadowOffset: { width: -5, height: -3 },
         textShadowRadius: 5,
         fontFamily:'BarlowCondensed-SemiBold',
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     markerStyle: {
-        borderColor: 'rgb(227, 89, 255)',
+        borderColor: colors.primary,
         borderRadius: 15,
         borderWidth: 4,
         position: 'absolute',
