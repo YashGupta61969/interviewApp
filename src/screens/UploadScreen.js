@@ -12,7 +12,6 @@ const UploadScreen = ({ route }) => {
     useEffect(() => {
         videoFiles.forEach((vid, index, arr) => {
             setTimeout(() => {
-                console.log(index, arr.length)
                 uploadVideos(vid)
                 if (index === arr.length - 1) {
                     navigate('Welcome', { link: 'empty' })
