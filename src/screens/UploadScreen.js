@@ -10,24 +10,28 @@ const UploadScreen = ({ route }) => {
     const { navigate } = useNavigation()
 
     useEffect(() => {
-        videoFiles.forEach((vid, index, arr) => {
-            setTimeout(() => {
-                uploadVideos(vid)
-                if (index === arr.length - 1) {
-                    navigate('Welcome', { link: 'empty' })
-                }
-            }, 1000 * index)
-        })
+        uploadVideos()
+        // videoFiles.forEach((vid, index, arr) => {
+        //     setTimeout(() => {
+        //         uploadVideos(vid)
+        //         if (index === arr.length - 1) {
+        //             navigate('Welcome', { link: 'empty' })
+        //         }
+        //     }, 1000 * index)
+        // })
     }, [])
 
-    const uploadVideos = async (vid) => {
+    const uploadVideos = async () => {
         try {
             const form = new FormData()
-            form.append('video', {
-                uri: vid.uri,
-                type: 'video/mp4',
-                name: vid.name
-            })
+            
+            videoFiles.forEach((vid)=>[
+                form.append('video', {
+                    uri: vid.uri,
+                    type: 'video/mp4',
+                    name: vid.name
+                })
+            ])
             form.append('documentId', documentId)
 
             const requestUrl = 'http://142.93.219.133/video-app/';

@@ -25,14 +25,14 @@ const Camera = ({ route, navigation }) => {
     const [fontSize] = useState(new Animated.Value(45));
     const [paused, setPaused] = useState(false)
     const [redoModalVisible, setRedoModalVisible] = useState(false)
-    const [isRecording, setIsRecording] = useState(true)
+    const [isRecording, setIsRecording] = useState(false)
     const [data, setData] = useState({})
     const [animatedViewHeight, setAnimatedViewHeight] = useState(0)
     const currentQuestion = data && data.questions && data.questions[questionId];
 
     useEffect(() => {
-        // position.setValue(0)
-        // fontSize.setValue(50)
+        position.setValue(0)
+        fontSize.setValue(50)
 
         // Text Animations
         Animated.timing(position, {
@@ -51,14 +51,14 @@ const Camera = ({ route, navigation }) => {
 
         // Fetches the question from firebase
     }, [isFocused, redoModalVisible]);
-    
-    useEffect(()=>{
+
+    useEffect(() => {
         // startRecording();
 
         firestore().collection('users').doc(documentId).get().then((res) => {
             setData(res.data())
         });
-    },[isFocused])
+    }, [isFocused])
 
     // Translates Question Text From Center to Bottom With Ansimation
     const translateY = position.interpolate({
