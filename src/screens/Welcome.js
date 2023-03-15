@@ -21,13 +21,13 @@ const Welcome = ({ route }) => {
         if(isFocused){
             setLoading(true)
             firestore().collection('users').doc(documentId).get().then((res) => {
-                const questions = res.data().questions.filter(que=>!que.answer);
                 
                 setData(res.data())
-                if(questions.length){
+                if(!res.data().response){
                     setAreQuestionsAvailable(true)
+                }else{
+                    setAreQuestionsAvailable(false)
                 }
-                
             }).catch(err => console.log(err)).finally(()=>setLoading(false))
         }
     }, [isFocused, link]);
@@ -39,6 +39,7 @@ const Welcome = ({ route }) => {
       }
       
       const welcomeMessage = link === 'empty' ? 'Thank You' : `WELCOME ${data.name?.toUpperCase()}`;
+
     // Returns Camera Screen Option When Questions Are Available 
     return (
         <>

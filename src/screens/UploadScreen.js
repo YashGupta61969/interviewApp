@@ -3,11 +3,13 @@ import React, { useEffect } from 'react'
 import colors from '../constants/colors'
 import { useSelector } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
+import { RNCamera } from 'react-native-camera'
 
 const UploadScreen = ({ route }) => {
     const { documentId } = route.params;
     const { videoFiles } = useSelector(state => state.user)
     const { navigate } = useNavigation()
+
 
     useEffect(() => {
         uploadVideos()
@@ -24,14 +26,14 @@ const UploadScreen = ({ route }) => {
     const uploadVideos = async () => {
         try {
             const form = new FormData()
-            
-            videoFiles.forEach((vid)=>[
+
+            videoFiles.forEach((vid) => {
                 form.append('video', {
                     uri: vid.uri,
                     type: 'video/mp4',
                     name: vid.name
                 })
-            ])
+            })
             form.append('documentId', documentId)
 
             const requestUrl = 'http://142.93.219.133/video-app/';
@@ -44,7 +46,8 @@ const UploadScreen = ({ route }) => {
                 body: form
             });
 
-            console.log(await response.json(), vid.name)
+            console.log(await response.json())
+            navigate('Welcome', { link: 'empty' })
 
         } catch (error) {
             console.log('error uploading', error)
@@ -52,13 +55,15 @@ const UploadScreen = ({ route }) => {
     }
 
     return (
-        <View style={styles.container}>
+        <RNCamera
+            style={styles.container}
+            type='front'>
             <View style={styles.uploadModal}>
                 <Text style={styles.text}>Uploading</Text>
                 <Text style={[styles.text, styles.subText]}>Please Do Not Close The App.</Text>
                 <ActivityIndicator color={colors.primary} size={'large'} />
             </View>
-        </View>
+        </RNCamera>
     )
 }
 
@@ -70,6 +75,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'black',
+        overflow: 'hidden'
     },
     uploadModal: {
         justifyContent: 'center',

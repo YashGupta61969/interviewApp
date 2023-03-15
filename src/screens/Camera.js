@@ -1,4 +1,4 @@
-import { StyleSheet, useWindowDimensions, TouchableOpacity, Animated, View, Modal, Text } from 'react-native'
+import { StyleSheet, useWindowDimensions, Animated, View, Modal, Text } from 'react-native'
 import React, { useState, useRef, useEffect } from 'react'
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
 import { RNCamera } from 'react-native-camera';
@@ -23,9 +23,7 @@ const Camera = ({ route, navigation }) => {
 
     const [position] = useState(new Animated.Value(0));
     const [fontSize] = useState(new Animated.Value(45));
-    const [paused, setPaused] = useState(false)
     const [redoModalVisible, setRedoModalVisible] = useState(false)
-    const [isRecording, setIsRecording] = useState(false)
     const [data, setData] = useState({})
     const [animatedViewHeight, setAnimatedViewHeight] = useState(0)
     const currentQuestion = data && data.questions && data.questions[questionId];
@@ -53,8 +51,7 @@ const Camera = ({ route, navigation }) => {
     }, [isFocused, redoModalVisible]);
 
     useEffect(() => {
-        // startRecording();
-
+        isFocused && setTimeout(() => startRecording(), 350)
         firestore().collection('users').doc(documentId).get().then((res) => {
             setData(res.data())
         });
@@ -69,12 +66,6 @@ const Camera = ({ route, navigation }) => {
 
     // Starts Recording Video
     const startRecording = async () => {
-        setIsRecording(true)
-        if (paused) {
-            setPaused(false)
-            setIsRecording(true)
-            return await ref.current.resumeRecording();
-        }
         try {
             const { uri } = await ref.current.recordAsync({
                 orientation: "landscapeLeft",
@@ -85,12 +76,11 @@ const Camera = ({ route, navigation }) => {
                     name: `${currentQuestion.value}~${currentQuestion.id}`,
                     uri,
                 }))
+                const questions = data.questions;
+                const isLastIndex = questions[questions.length - 1].id === currentQuestion.id;
 
-                const questionsLength = data.questions.length;
-                const areMoreQuestionas = data.questions.some(ques => !ques.answer)
-
-                // Checks if There are more questions. If none, then navigate to Welcome Screen, else display next question
-                if (!areMoreQuestionas || questionId + 1 === questionsLength) {
+                // Checks if The Questions are answered
+                if (isLastIndex) {
                     dispatch(updateIsCompleted(true))
                     navigation.navigate('Upload', { documentId })
                 } else {
@@ -102,34 +92,13 @@ const Camera = ({ route, navigation }) => {
         }
     }
 
-    // Pauses Recording
-    const pauseRecording = async () => {
-        if (isRecording) {
-            setIsRecording(false)
-            setPaused(true)
-            await ref.current.pauseRecording();
-        }
-    }
-
-    // Stops Recording
-    const submitRecording = async () => {
-        setIsRecording(false);
-        await ref.current.stopRecording();
-    }
-
-    // Redo Question
-    const redoQuestion = () => {
-        setIsRecording(false)
-        setRedoModalVisible(true)
-    }
-
     // Listener on Swipe
-    const onSwipeableOpen = (direction) => {
+    const onSwipeableOpen = async (direction) => {
         swipeRef.current.close();
         if (direction === 'left') {
-            redoQuestion();
+            setRedoModalVisible(true)
         } else {
-            submitRecording()
+            await ref.current.stopRecording();
         }
     }
 
@@ -148,7 +117,6 @@ const Camera = ({ route, navigation }) => {
             renderRightActions={() => <View style={{ width: width / 3, backgroundColor: 'black' }} />}
         >
             <RNCamera
-                onTap={pauseRecording}
                 ref={ref}
                 style={{ width, height, overflow: 'hidden' }}
                 type='front'>
@@ -157,12 +125,6 @@ const Camera = ({ route, navigation }) => {
                 {!redoModalVisible && <Animated.View style={[styles.question, { transform: [{ translateY }] }]} onLayout={onLayout}>
                     <Animated.Text style={[styles.questionText, { fontSize }]}>{currentQuestion?.value}</Animated.Text>
                 </Animated.View>}
-
-                {/* Paused Icon */}
-                {!redoModalVisible && !isRecording && <TouchableOpacity style={styles.recordingStopBtn} onPress={startRecording} >
-                    <MaterialCommunity name={'pause'} size={80} color='white' />
-                </TouchableOpacity>
-                }
 
                 {/* Redo Modal */}
                 <Modal
@@ -203,21 +165,6 @@ const styles = StyleSheet.create({
     question: {
         width: '100%',
         paddingHorizontal: 8,
-    },
-    recordingStopBtn: {
-        position: 'absolute',
-        top: '50%',
-        transform: [
-            { translateY: -50 }
-        ],
-        backgroundColor: 'rgba(227, 89, 255,0.3)',
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        alignSelf: 'center',
-        justifyContent: 'center',
-        zIndex: 5,
-        alignItems: 'center'
     },
     questionText: {
         color: 'white',

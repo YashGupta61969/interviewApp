@@ -12,7 +12,7 @@ import colors from '../constants/colors';
 const Tab = createMaterialTopTabNavigator();
 
 const TabBarNavigation = ({ route }) => {
-    const {isCompleted} = useSelector(state=>state.user)
+    const { isCompleted } = useSelector(state => state.user)
     const { link } = route.params;
     const documentId = link.split('data=')[1];
     const [questions, setQuestions] = useState([])
@@ -22,16 +22,12 @@ const TabBarNavigation = ({ route }) => {
     useEffect(() => {
         setLoading(true)
         firestore().collection('users').doc(documentId).get().then((res) => {
+            setQuestions(res.data().questions)
 
-            if (res.data().questions.length) {
-                const filteredArr = res.data().questions.filter(que => !que.answer)
-                setQuestions(filteredArr)
-
-                if(filteredArr){
-                    dispatch(updateIsCompleted(false))
-                }else{
-                    dispatch(updateIsCompleted(true))
-                }
+            if (!res.data().response) {
+                dispatch(updateIsCompleted(false))
+            } else {
+                dispatch(updateIsCompleted(true))
             }
             setLoading(false)
         })
