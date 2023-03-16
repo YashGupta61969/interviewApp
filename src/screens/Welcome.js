@@ -1,48 +1,61 @@
 import { StyleSheet, Text, useWindowDimensions, View, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import firestore from '@react-native-firebase/firestore';
-import { RNCamera } from 'react-native-camera';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { useIsFocused } from '@react-navigation/native';
 import colors from '../constants/colors';
+import { Camera, useCameraDevices } from 'react-native-vision-camera';
 
 const Welcome = ({ route }) => {
     const isFocused = useIsFocused()
     const { link } = route.params;
     const documentId = link.split('data=')[1];
     const { height, width } = useWindowDimensions();
-    
+    const device = useCameraDevices().front
+
     const [showInfo, setShowInfo] = useState(false)
     const [data, setData] = useState({})
-    const [areQuestionsAvailable, setAreQuestionsAvailable ] = useState(true)
+    const [areQuestionsAvailable, setAreQuestionsAvailable] = useState(true)
     const [loading, setLoading] = useState(false)
-    
+
     useEffect(() => {
-        if(isFocused){
+        if (isFocused) {
+            (async()=>{
+                const camPermission = await Camera.getCameraPermissionStatus()
+                const micPermission = await Camera.getMicrophonePermissionStatus()
+                
+                if(camPermission !== 'authorized' && micPermission !== 'authorized'){
+                    Camera.requestCameraPermission()
+                    Camera.requestMicrophonePermission()
+                }
+            })()
+            
             setLoading(true)
             firestore().collection('users').doc(documentId).get().then((res) => {
-                
+
                 setData(res.data())
-                if(!res.data().response){
+                if (!res.data().response) {
                     setAreQuestionsAvailable(true)
-                }else{
+                } else {
                     setAreQuestionsAvailable(false)
                 }
-            }).catch(err => console.log(err)).finally(()=>setLoading(false))
+            }).catch(err => console.log(err)).finally(() => setLoading(false))
         }
     }, [isFocused, link]);
 
+    if (device == null) return <Text style={{ color: 'red' }}>No Camera you Poor</Text>
+
     if (loading) {
         return <View style={{ width, height, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size={'large'} color={colors.primary}/>
+            <ActivityIndicator size={'large'} color={colors.primary} />
         </View>
-      }
-      
-      const welcomeMessage = link === 'empty' ? 'Thank You' : `WELCOME ${data.name?.toUpperCase()}`;
+    }
+
+    const welcomeMessage = link === 'empty' ? 'Thank You' : `WELCOME ${data.name?.toUpperCase()}`;
 
     // Returns Camera Screen Option When Questions Are Available 
     return (
-        <>
+        <View style={{ position: 'relative', flex: 1 }}>
             {!showInfo && <MaterialIcons name='menu' color={colors.primary} size={40} style={styles.infoIcon} onPress={() => setShowInfo(true)} />}
 
             {
@@ -55,21 +68,23 @@ const Welcome = ({ route }) => {
                     <Text style={styles.infoText}>5. SWIPE ---&gt; TO REDO // TOUCH SCREEN TO PAUSE</Text>
                 </View>
             }
+            <Camera
+                style={{ flex: 1 }}
+                device={device}
+                isActive={true}
+                onError={(er) => console.log(er)}
+            />
 
-            <RNCamera
-                style={{ width, height, overflow: 'hidden' }}
-                type='front'>
-                {
-                    !showInfo && (link === 'empty' || !areQuestionsAvailable  ? <View style={styles.container}>
-                        <Text style={styles.welcomeText}>{welcomeMessage}</Text>
-                        <Text style={styles.interviewCompleteText}>You Have Completed Your Interview</Text>
-                    </View> : <View style={styles.container}>
-                        <Text style={styles.welcomeText}>WELCOME</Text>
-                        <Text style={styles.welcomeText}>{data.name?.toUpperCase()}</Text>
-                    </View>)
-                }
-            </RNCamera>
-        </>
+            {
+                !showInfo && (link === 'empty' || !areQuestionsAvailable ? <View style={styles.container}>
+                    <Text style={styles.welcomeText}>{welcomeMessage}</Text>
+                    <Text style={styles.interviewCompleteText}>You Have Completed Your Interview</Text>
+                </View> : <View style={styles.container}>
+                    <Text style={styles.welcomeText}>WELCOME</Text>
+                    <Text style={styles.welcomeText}>{data.name?.toUpperCase()}</Text>
+                </View>)
+            }
+        </View>
     )
 }
 
@@ -77,16 +92,20 @@ export default Welcome
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
         justifyContent: 'center',
         alignItems: 'center',
     },
     welcomeText: {
         color: 'white',
         fontSize: 55,
-        fontFamily:'BarlowCondensed-SemiBold',
+        fontFamily: 'BarlowCondensed-SemiBold',
         textAlign: 'center',
-        letterSpacing:2,
+        letterSpacing: 2,
         textShadowColor: colors.primary,
         textShadowOffset: { width: -3, height: -2 },
         textShadowRadius: 5,
@@ -112,14 +131,14 @@ const styles = StyleSheet.create({
         color: colors.primary,
         fontSize: 35,
         textAlign: 'center',
-        fontFamily:'BarlowCondensed-Medium',
+        fontFamily: 'BarlowCondensed-Medium',
     },
-    interviewCompleteText:{
-        marginTop: 12, 
-        fontSize: 22, 
+    interviewCompleteText: {
+        marginTop: 12,
+        fontSize: 22,
         paddingHorizontal: 10,
-        color:'white',
-        fontFamily:'BarlowCondensed-Medium',
+        color: 'white',
+        fontFamily: 'BarlowCondensed-Medium',
         textShadowColor: colors.primary,
         textShadowOffset: { width: -2, height: -1 },
         textShadowRadius: 5,
