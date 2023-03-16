@@ -62,12 +62,12 @@ const App = () => {
             link ?
               <>
                 <Stack.Screen name='Tabs' component={TabBarNavigation} initialParams={{ link }} />
-                <Stack.Screen name='Upload' component={UploadScreen} />
+                <Stack.Screen name='Upload' component={UploadScreen} initialParams={{ link }}/>
               </>
               : <>
                 <Stack.Screen name='QR' component={QRReader} />
                 <Stack.Screen name='Tabs' component={UploadScreen} />
-                <Stack.Screen name='Upload' component={TabBarNavigation} initialParams={{ link }} />
+                <Stack.Screen name='Upload' component={UploadScreen} initialParams={{ link }} />
               </>
           }
         </Stack.Navigator>

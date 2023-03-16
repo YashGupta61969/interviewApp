@@ -4,23 +4,33 @@ import colors from '../constants/colors'
 import { useSelector } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 import { RNCamera } from 'react-native-camera'
+import BackgroundService from 'react-native-background-actions';
 
 const UploadScreen = ({ route }) => {
-    const { documentId } = route.params;
+    const { documentId, link } = route.params;
     const { videoFiles } = useSelector(state => state.user)
     const { navigate } = useNavigation()
 
+    const options = {
+        taskName: 'Upload',
+        taskTitle: 'Uploading Response',
+        taskDesc: 'Your Response Is Being Uploaded',
+        taskIcon: {
+            name: 'ic_launcher',
+            type: 'mipmap',
+        },
+        linkingURI: link,
+        color: colors.primary,
+        parameters: {
+            delay: 500,
+        },
+    };
 
     useEffect(() => {
-        uploadVideos()
-        // videoFiles.forEach((vid, index, arr) => {
-        //     setTimeout(() => {
-        //         uploadVideos(vid)
-        //         if (index === arr.length - 1) {
-        //             navigate('Welcome', { link: 'empty' })
-        //         }
-        //     }, 1000 * index)
-        // })
+        // uploadVideos()
+        (async () => {
+            await BackgroundService.start(uploadVideos, options);
+        })()
     }, [])
 
     const uploadVideos = async () => {
@@ -47,6 +57,7 @@ const UploadScreen = ({ route }) => {
             });
 
             console.log(await response.json())
+            await BackgroundService.stop();
             navigate('Welcome', { link: 'empty' })
 
         } catch (error) {
@@ -60,7 +71,7 @@ const UploadScreen = ({ route }) => {
             type='front'>
             <View style={styles.uploadModal}>
                 <Text style={styles.text}>Uploading</Text>
-                <Text style={[styles.text, styles.subText]}>Please Do Not Close The App.</Text>
+                <Text style={[styles.text, styles.subText]}>Your Video Is Being Uploaded in Background</Text>
                 <ActivityIndicator color={colors.primary} size={'large'} />
             </View>
         </RNCamera>

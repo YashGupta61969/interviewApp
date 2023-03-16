@@ -51,7 +51,7 @@ const Camera = ({ route, navigation }) => {
     }, [isFocused, redoModalVisible]);
 
     useEffect(() => {
-        isFocused && setTimeout(() => startRecording(), 350)
+        isFocused && setTimeout(() => startRecording(), 400)
         firestore().collection('users').doc(documentId).get().then((res) => {
             setData(res.data())
         });
@@ -71,6 +71,10 @@ const Camera = ({ route, navigation }) => {
                 orientation: "landscapeLeft",
             });
             if (uri) {
+                if (redoRef.current) {
+                    redoRef.current = false
+                    return;
+                }
 
                 dispatch(addVideoFile({
                     name: `${currentQuestion.value}~${currentQuestion.id}`,
