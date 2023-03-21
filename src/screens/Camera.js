@@ -1,7 +1,7 @@
 import { StyleSheet, useWindowDimensions, Animated, View, Modal, Text } from 'react-native'
 import React, { useState, useRef, useEffect } from 'react'
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
-import { Camera, useCameraDevices } from 'react-native-vision-camera';
+import { RNCamera } from 'react-native-camera';
 import firestore from '@react-native-firebase/firestore';
 import { useIsFocused } from '@react-navigation/native';
 import { Swipeable } from 'react-native-gesture-handler';
@@ -10,8 +10,7 @@ import { useDispatch } from 'react-redux';
 import { addVideoFile, updateIsCompleted } from '../store/slices/userSlice';
 import colors from '../constants/colors';
 
-const CameraComponent = ({ route, navigation }) => {
-
+const Camera = ({ route, navigation }) => {
     const ref = useRef();
     const redoRef = useRef(false)
     const swipeRef = useRef();
@@ -20,8 +19,6 @@ const CameraComponent = ({ route, navigation }) => {
     const isFocused = useIsFocused();
     const documentId = link.split('data=')[1];
     const dispatch = useDispatch()
-
-    const device = useCameraDevices().front
 
     const [position] = useState(new Animated.Value(0));
     const [fontSize] = useState(new Animated.Value(45));
@@ -53,7 +50,7 @@ const CameraComponent = ({ route, navigation }) => {
     }, [isFocused, redoModalVisible]);
 
     useEffect(() => {
-        isFocused && setTimeout(startRecording, 400)
+        isFocused && setTimeout(() => startRecording(), 400)
         firestore().collection('users').doc(documentId).get().then((res) => {
             setData(res.data())
         });
@@ -68,10 +65,11 @@ const CameraComponent = ({ route, navigation }) => {
 
     // Starts Recording Video
     const startRecording = async () => {
-        console.log('first')
-        ref.current.startRecording({
-            fileType: 'mp4',
-            onRecordingFinished: ({ path }) => {
+        try {
+            const { uri } = await ref.current.recordAsync({
+                orientation: "landscapeLeft",
+            });
+            if (uri) {
                 if (redoRef.current) {
                     redoRef.current = false
                     return;
@@ -79,9 +77,8 @@ const CameraComponent = ({ route, navigation }) => {
 
                 dispatch(addVideoFile({
                     name: `${currentQuestion.value}~${currentQuestion.id}`,
-                    uri: path,
+                    uri,
                 }))
-
                 const questions = data.questions;
                 const isLastIndex = questions[questions.length - 1].id === currentQuestion.id;
 
@@ -92,9 +89,10 @@ const CameraComponent = ({ route, navigation }) => {
                 } else {
                     navigation.navigate(`Camera${questionId + 1}`)
                 }
-            },
-            onRecordingError: (error) => console.error('Recording Error', error),
-        })
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     // Listener on Swipe
@@ -121,50 +119,46 @@ const CameraComponent = ({ route, navigation }) => {
             renderLeftActions={() => <View style={{ width: width / 3, backgroundColor: 'black' }} />}
             renderRightActions={() => <View style={{ width: width / 3, backgroundColor: 'black' }} />}
         >
-            <Camera
-                style={{ width, height }}
-                device={device}
-                isActive={true}
+            <RNCamera
                 ref={ref}
-                video={true}
-                audio={true}
-                onError={(er) => console.log(er)}
-            />
+                style={{ width, height, overflow: 'hidden' }}
+                type='front'>
 
-            {/* Animated Text */}
-            {!redoModalVisible && <Animated.View style={[styles.question, { transform: [{ translateY }] }]} onLayout={onLayout}>
-                <Animated.Text style={[styles.questionText, { fontSize }]}>{currentQuestion?.value}</Animated.Text>
-            </Animated.View>}
+                {/* Animated Text */}
+                {!redoModalVisible && <Animated.View style={[styles.question, { transform: [{ translateY }] }]} onLayout={onLayout}>
+                    <Animated.Text style={[styles.questionText, { fontSize }]}>{currentQuestion?.value}</Animated.Text>
+                </Animated.View>}
 
-            {/* Redo Modal */}
-            <Modal
-                animationType="fade"
-                transparent={true}
-                visible={redoModalVisible}>
+                {/* Redo Modal */}
+                <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={redoModalVisible}>
 
-                <View style={{ ...styles.modal, height, width }}>
-                    <Text style={styles.redoText}>Redo Question</Text>
-                    <View style={styles.icons}>
-                        <MaterialCommunity name={'check'} size={80} color={colors.primary} onPress={async () => {
-                            redoRef.current = true
-                            setRedoModalVisible(false)
-                            try {
-                                await ref.current.stopRecording();
-                            } catch (err) {
-                                console.log(err)
-                            }
-                        }} />
-                        <Entypo name={'cross'} size={80} color={colors.primary} onPress={() => {
-                            setRedoModalVisible(false)
-                        }} />
+                    <View style={{ ...styles.modal, height, width }}>
+                        <Text style={styles.redoText}>Redo Question</Text>
+                        <View style={styles.icons}>
+                            <MaterialCommunity name={'check'} size={80} color={colors.primary} onPress={async () => {
+                                redoRef.current = true
+                                setRedoModalVisible(false)
+                                try {
+                                    await ref.current.stopRecording();
+                                } catch (err) {
+                                    console.log(err)
+                                }
+                            }} />
+                            <Entypo name={'cross'} size={80} color={colors.primary} onPress={() => {
+                                setRedoModalVisible(false)
+                            }} />
+                        </View>
                     </View>
-                </View>
-            </Modal>
+                </Modal>
+            </RNCamera>
         </Swipeable>
     )
 }
 
-export default CameraComponent
+export default Camera
 
 const styles = StyleSheet.create({
     container: {
@@ -174,15 +168,13 @@ const styles = StyleSheet.create({
     question: {
         width: '100%',
         paddingHorizontal: 8,
-        position: 'absolute',
-        zIndex: 2
     },
     questionText: {
         color: 'white',
         textAlign: 'center',
         textShadowColor: colors.primary,
         textShadowOffset: { width: 4, height: 4 },
-        textShadowRadius: 15,
+        textShadowRadius: 10,
         zIndex: 8,
         fontFamily: 'BarlowCondensed-SemiBold',
     },

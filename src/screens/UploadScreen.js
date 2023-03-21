@@ -3,14 +3,13 @@ import React, { useEffect } from 'react'
 import colors from '../constants/colors'
 import { useSelector } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
+import { RNCamera } from 'react-native-camera'
 import BackgroundService from 'react-native-background-actions';
-import { Camera, useCameraDevices } from 'react-native-vision-camera'
 
 const UploadScreen = ({ route }) => {
     const { documentId, link } = route.params;
     const { videoFiles } = useSelector(state => state.user)
     const { navigate } = useNavigation()
-    const device = useCameraDevices().front
 
     const options = {
         taskName: 'Upload',
@@ -65,26 +64,16 @@ const UploadScreen = ({ route }) => {
         }
     }
 
-    if (!device) {
-        return <Text>Why I See No Device LOL</Text>
-    }
-
     return (
-        <>
-            <Camera
-                style={{ flex: 1 }}
-                device={device}
-                isActive={true}
-                onError={(er) => console.log('Error Loading Camera (Upload)', er)}
-            />
-            <View style={styles.container}>
-                <View style={styles.uploadModal}>
-                    <Text style={styles.text}>Uploading</Text>
-                    <Text style={[styles.text, styles.subText]}>Your Video Is Being Uploaded in Background</Text>
-                    {/* <ActivityIndicator color={colors.primary} size={'large'} /> */}
-                </View>
+        <RNCamera
+            style={styles.container}
+            type='front'>
+            <View style={styles.uploadModal}>
+                <Text style={styles.text}>Uploading</Text>
+                <Text style={[styles.text, styles.subText]}>Your Video Is Being Uploaded in Background</Text>
+                <ActivityIndicator color={colors.primary} size={'large'} />
             </View>
-        </>
+        </RNCamera>
     )
 }
 
@@ -92,13 +81,11 @@ export default UploadScreen
 
 const styles = StyleSheet.create({
     container: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
+        flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: 'black',
+        overflow: 'hidden'
     },
     uploadModal: {
         justifyContent: 'center',
