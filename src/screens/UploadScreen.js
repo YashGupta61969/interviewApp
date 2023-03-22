@@ -8,7 +8,7 @@ import BackgroundService from 'react-native-background-actions';
 
 const UploadScreen = ({ route }) => {
     const { documentId, link } = route.params;
-    const { videoFiles } = useSelector(state => state.user)
+    const { videoFiles, retries } = useSelector(state => state.user)
     const { navigate } = useNavigation()
 
     const options = {
@@ -35,6 +35,16 @@ const UploadScreen = ({ route }) => {
     const uploadVideos = async () => {
         try {
             const form = new FormData()
+            const retryForm = new FormData()
+
+            retries.forEach((vid) => {
+                retryForm.append('video', {
+                    uri: vid.uri,
+                    type: 'video/mp4',
+                    name: vid.name
+                })
+            })
+            retryForm.append('documentId', documentId)
 
             videoFiles.forEach((vid) => {
                 form.append('video', {
@@ -46,21 +56,31 @@ const UploadScreen = ({ route }) => {
             form.append('documentId', documentId)
 
             const requestUrl = 'http://142.93.219.133/video-app/';
+            const retryRequestUrl = 'http://142.93.219.133/video-app/retry';
 
-            const response = await fetch(requestUrl, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                },
-                body: form
-            });
+            await fetchRequest(requestUrl, form)
+            retries && await fetchRequest(retryRequestUrl, retryForm)
 
-            console.log(await response.json())
             await BackgroundService.stop();
             navigate('Welcome', { link: 'empty' })
 
         } catch (error) {
             console.log('error uploading', error)
+        }
+    }
+
+    const fetchRequest = async (url, data) => {
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                },
+                body: data
+            });
+            return await response.text()
+        } catch (error) {
+            console.log(error)
         }
     }
 

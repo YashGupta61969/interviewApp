@@ -23,10 +23,10 @@ const QRReader = () => {
             <RNCamera
                 ref={ref}
                 onBarCodeRead={onBarcodeDetected}
-                style={[styles.cameraView, {width, height}]}>
+                style={[styles.cameraView, { width, height }]}>
                 <View style={[styles.markerStyle, { width: width / 3 + 30, height: width / 3 + 30 }]} />
 
-                <View style={{ position: 'absolute', right: 90, width:190 }}>
+                <View style={{ position: 'absolute', right: 90, width: 190 }}>
                     <Text style={styles.text}>SCAN</Text>
                     <Text style={styles.text}>QR CODE</Text>
                 </View>
@@ -47,14 +47,14 @@ const styles = StyleSheet.create({
         fontSize: 55,
         color: 'white',
         textAlign: 'center',
-        letterSpacing:1,
+        letterSpacing: 1,
         textShadowColor: colors.primary,
         textShadowOffset: { width: -5, height: -3 },
         textShadowRadius: 5,
-        fontFamily:'BarlowCondensed-SemiBold',
+        fontFamily: 'BarlowCondensed-SemiBold',
     },
-    cameraView:{
-        overflow: 'hidden', 
+    cameraView: {
+        overflow: 'hidden',
         justifyContent: 'center'
     },
     markerStyle: {

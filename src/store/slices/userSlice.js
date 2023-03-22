@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     isCompleted: false,
-    videoFiles: []
+    videoFiles: [],
+    retries: []
 }
 
 const userSlice = createSlice({
@@ -14,10 +15,13 @@ const userSlice = createSlice({
         },
         addVideoFile: (state, { payload }) => {
             state.videoFiles.push(payload)
-        }
+        },
+        addRetries: (state, { payload }) => {
+            state.retries.push(payload)
+        },
     }
 })
 
 export default userSlice.reducer
 
-export const { updateIsCompleted, addVideoFile } = userSlice.actions
+export const { updateIsCompleted, addVideoFile, addRetries } = userSlice.actions

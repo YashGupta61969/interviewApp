@@ -7,7 +7,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { Swipeable } from 'react-native-gesture-handler';
 import Entypo from 'react-native-vector-icons/Entypo'
 import { useDispatch } from 'react-redux';
-import { addVideoFile, updateIsCompleted } from '../store/slices/userSlice';
+import { addRetries, addVideoFile, updateIsCompleted } from '../store/slices/userSlice';
 import colors from '../constants/colors';
 
 const Camera = ({ route, navigation }) => {
@@ -71,8 +71,12 @@ const Camera = ({ route, navigation }) => {
             });
             if (uri) {
                 if (redoRef.current) {
-                    redoRef.current = false
-                    return;
+                    redoRef.current = false;
+                    dispatch(addRetries({
+                        name: `${currentQuestion.value}~${currentQuestion.id}`,
+                        uri,
+                    }))
+                    return setTimeout(() => startRecording(), 400)
                 }
 
                 dispatch(addVideoFile({
