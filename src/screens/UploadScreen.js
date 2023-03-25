@@ -1,15 +1,20 @@
 import { StyleSheet, Text, View, ActivityIndicator } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import colors from '../constants/colors'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 import { RNCamera } from 'react-native-camera'
 import BackgroundService from 'react-native-background-actions';
+import notifee from '@notifee/react-native';
+import { addVideoFile, clearRetries, clearVideoFiles } from '../store/slices/userSlice'
 
 const UploadScreen = ({ route }) => {
+
+    const dispatch = useDispatch
     const { documentId, link } = route.params;
     const { videoFiles, retries } = useSelector(state => state.user)
     const { navigate } = useNavigation()
+    const [channelId, setChannelId] = useState('')
 
     const options = {
         taskName: 'Upload',
@@ -28,6 +33,12 @@ const UploadScreen = ({ route }) => {
 
     useEffect(() => {
         (async () => {
+            const channelId = await notifee.createChannel({
+                id: 'default',
+                name: 'Default Channel',
+            });
+            setChannelId(channelId)
+            await onDisplayNotification('Uploading Response', 'Your response is being uploaded')
             await BackgroundService.start(uploadVideos, options);
         })()
     }, [])
@@ -59,14 +70,32 @@ const UploadScreen = ({ route }) => {
             const retryRequestUrl = 'http://142.93.219.133/video-app/retry';
 
             await fetchRequest(requestUrl, form)
-            retries && await fetchRequest(retryRequestUrl, retryForm)
+            retries.length && await fetchRequest(retryRequestUrl, retryForm)
 
+            await onDisplayNotification('Completed', 'Your response has been submitted')
+
+            dispatch(clearVideoFiles())
+            dispatch(clearRetries())
             await BackgroundService.stop();
             navigate('Welcome', { link: 'empty' })
 
         } catch (error) {
             console.log('error uploading', error)
         }
+    }
+
+    // Display a notification
+    const onDisplayNotification = async (title, body) => {
+        return notifee.displayNotification({
+            title,
+            body,
+            android: {
+                channelId,
+                pressAction: {
+                    id: 'default',
+                },
+            },
+        });
     }
 
     const fetchRequest = async (url, data) => {
@@ -78,7 +107,7 @@ const UploadScreen = ({ route }) => {
                 },
                 body: data
             });
-            return await response.text()
+            return response.json()
         } catch (error) {
             console.log(error)
         }

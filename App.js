@@ -66,7 +66,7 @@ const App = () => {
               </>
               : <>
                 <Stack.Screen name='QR' component={QRReader} />
-                <Stack.Screen name='Tabs' component={UploadScreen} />
+                <Stack.Screen name='Tabs' component={TabBarNavigation} />
                 <Stack.Screen name='Upload' component={UploadScreen} initialParams={{ link }} />
               </>
           }

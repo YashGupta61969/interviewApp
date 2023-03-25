@@ -16,6 +16,12 @@ const userSlice = createSlice({
         addVideoFile: (state, { payload }) => {
             state.videoFiles.push(payload)
         },
+        clearVideoFiles:(state)=>{
+            state.videoFiles = []
+        },
+        clearRetries:(state)=>{
+            state.retries = []
+        },
         addRetries: (state, { payload }) => {
             state.retries.push(payload)
         },
@@ -24,4 +30,4 @@ const userSlice = createSlice({
 
 export default userSlice.reducer
 
-export const { updateIsCompleted, addVideoFile, addRetries } = userSlice.actions
+export const { updateIsCompleted, addVideoFile, addRetries, clearRetries, clearVideoFiles } = userSlice.actions
