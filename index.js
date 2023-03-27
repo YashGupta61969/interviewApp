@@ -19,11 +19,4 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
     }
 });
 
-useEffect(() => {
-    (async () => {
-        // Request permissions (required for iOS)
-        await notifee.requestPermission();
-    })()
-})
-
 AppRegistry.registerComponent(appName, () => App);

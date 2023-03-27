@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import colors from '../constants/colors'
 import { useDispatch, useSelector } from 'react-redux'
@@ -6,12 +6,12 @@ import { useNavigation } from '@react-navigation/native'
 import { RNCamera } from 'react-native-camera'
 import BackgroundService from 'react-native-background-actions';
 import notifee from '@notifee/react-native';
-import { addVideoFile, clearRetries, clearVideoFiles } from '../store/slices/userSlice'
+import { clearRetries, clearVideoFiles } from '../store/slices/userSlice'
 
 const UploadScreen = ({ route }) => {
 
     const dispatch = useDispatch
-    const { documentId, link } = route.params;
+    const { documentId } = route.params;
     const { videoFiles, retries } = useSelector(state => state.user)
     const { navigate } = useNavigation()
     const [channelId, setChannelId] = useState('')
@@ -24,8 +24,8 @@ const UploadScreen = ({ route }) => {
             name: 'ic_launcher',
             type: 'mipmap',
         },
-        linkingURI: link,
-        color: colors.primary,
+        linkingURI: 'https://interviewapptestyash.page.link/',
+        color: '#ff00ff',
         parameters: {
             delay: 500,
         },
@@ -33,11 +33,14 @@ const UploadScreen = ({ route }) => {
 
     useEffect(() => {
         (async () => {
-            const channelId = await notifee.createChannel({
+            // Request permissions (required for iOS)
+            await notifee.requestPermission();
+
+            const _channelId = await notifee.createChannel({
                 id: 'default',
                 name: 'Default Channel',
             });
-            setChannelId(channelId)
+            setChannelId(_channelId)
             await onDisplayNotification('Uploading Response', 'Your response is being uploaded')
             await BackgroundService.start(uploadVideos, options);
         })()
@@ -69,9 +72,9 @@ const UploadScreen = ({ route }) => {
             const requestUrl = 'http://142.93.219.133/video-app/';
             const retryRequestUrl = 'http://142.93.219.133/video-app/retry';
 
-            await fetchRequest(requestUrl, form)
-            retries.length && await fetchRequest(retryRequestUrl, retryForm)
-
+            videoFiles.length && await fetchRequest(requestUrl, form);
+            console.log('after fetch')
+            retries.length && await fetchRequest(retryRequestUrl, retryForm);
             await onDisplayNotification('Completed', 'Your response has been submitted')
 
             dispatch(clearVideoFiles())
@@ -80,7 +83,7 @@ const UploadScreen = ({ route }) => {
             navigate('Welcome', { link: 'empty' })
 
         } catch (error) {
-            console.log('error uploading', error)
+            console.log('background task error', error)
         }
     }
 
@@ -91,23 +94,19 @@ const UploadScreen = ({ route }) => {
             body,
             android: {
                 channelId,
-                pressAction: {
-                    id: 'default',
-                },
             },
         });
     }
 
     const fetchRequest = async (url, data) => {
         try {
-            const response = await fetch(url, {
+            return await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                 },
                 body: data
             });
-            return response.json()
         } catch (error) {
             console.log(error)
         }
@@ -120,7 +119,6 @@ const UploadScreen = ({ route }) => {
             <View style={styles.uploadModal}>
                 <Text style={styles.text}>Uploading</Text>
                 <Text style={[styles.text, styles.subText]}>Your Video Is Being Uploaded in Background</Text>
-                <ActivityIndicator color={colors.primary} size={'large'} />
             </View>
         </RNCamera>
     )

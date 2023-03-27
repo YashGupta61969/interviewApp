@@ -16,14 +16,14 @@ const userSlice = createSlice({
         addVideoFile: (state, { payload }) => {
             state.videoFiles.push(payload)
         },
+        addRetries: (state, { payload }) => {
+            state.retries.push(payload)
+        },
         clearVideoFiles:(state)=>{
             state.videoFiles = []
         },
         clearRetries:(state)=>{
             state.retries = []
-        },
-        addRetries: (state, { payload }) => {
-            state.retries.push(payload)
         },
     }
 })
