@@ -4,6 +4,7 @@ import firestore from '@react-native-firebase/firestore';
 import { RNCamera } from 'react-native-camera';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { useIsFocused } from '@react-navigation/native';
+import notifee from '@notifee/react-native';
 import colors from '../constants/colors';
 
 const Welcome = ({ route }) => {
@@ -28,6 +29,7 @@ const Welcome = ({ route }) => {
                     setAreQuestionsAvailable(false)
                 }
             }).catch(err => console.log(err)).finally(()=>setLoading(false))
+            notifee.requestPermission();
         }
     }, [isFocused, link]);
 

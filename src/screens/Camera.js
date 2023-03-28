@@ -68,6 +68,7 @@ const Camera = ({ route, navigation }) => {
         try {
             const { uri } = await ref.current.recordAsync({
                 orientation: "landscapeLeft",
+                quality:RNCamera.Constants.VideoQuality['720p']
             });
             if (uri) {
                 if (redoRef.current) {

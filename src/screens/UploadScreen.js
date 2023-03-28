@@ -2,24 +2,23 @@ import { StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import colors from '../constants/colors'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigation } from '@react-navigation/native'
 import { RNCamera } from 'react-native-camera'
 import BackgroundService from 'react-native-background-actions';
-import notifee from '@notifee/react-native';
+import notifee from '@notifee/react-native'
 import { clearRetries, clearVideoFiles } from '../store/slices/userSlice'
 
 const UploadScreen = ({ route }) => {
 
-    const dispatch = useDispatch
+    const dispatch = useDispatch()
     const { documentId } = route.params;
     const { videoFiles, retries } = useSelector(state => state.user)
-    const { navigate } = useNavigation()
-    const [channelId, setChannelId] = useState('')
+    const [message, setMessage] = useState('Your Video Is Being Uploaded in Background')
+    const [uploaded, setUploaded] = useState(false)
 
     const options = {
         taskName: 'Upload',
         taskTitle: 'Uploading Response',
-        taskDesc: 'Your Response Is Being Uploaded',
+        taskDesc: 'Uploading Your Response',
         taskIcon: {
             name: 'ic_launcher',
             type: 'mipmap',
@@ -33,16 +32,23 @@ const UploadScreen = ({ route }) => {
 
     useEffect(() => {
         (async () => {
-            // Request permissions (required for iOS)
-            await notifee.requestPermission();
+            try {
+                await notifee.createChannel({
+                    id: 'default',
+                    name: 'Default Channel',
+                });
 
-            const _channelId = await notifee.createChannel({
-                id: 'default',
-                name: 'Default Channel',
-            });
-            setChannelId(_channelId)
-            await onDisplayNotification('Uploading Response', 'Your response is being uploaded')
-            await BackgroundService.start(uploadVideos, options);
+                await notifee.displayNotification({
+                    title: 'Uploading',
+                    body: 'Your Response Is Being Uploaded',
+                    android: {
+                        channelId: 'default',
+                    },
+                });
+                await BackgroundService.start(uploadVideos, options);
+            } catch (error) {
+                setMessage(`Unknown Error ${error.message}`)
+            }
         })()
     }, [])
 
@@ -73,42 +79,32 @@ const UploadScreen = ({ route }) => {
             const retryRequestUrl = 'http://142.93.219.133/video-app/retry';
 
             videoFiles.length && await fetchRequest(requestUrl, form);
-            console.log('after fetch')
             retries.length && await fetchRequest(retryRequestUrl, retryForm);
-            await onDisplayNotification('Completed', 'Your response has been submitted')
+            setMessage('Your Response Is Uploaded')
+            setUploaded(true)
+            await notifee.cancelAllNotifications()
 
             dispatch(clearVideoFiles())
             dispatch(clearRetries())
             await BackgroundService.stop();
-            navigate('Welcome', { link: 'empty' })
-
         } catch (error) {
+            setMessage(`Upload function => ${error.message}`)
             console.log('background task error', error)
         }
     }
 
-    // Display a notification
-    const onDisplayNotification = async (title, body) => {
-        return notifee.displayNotification({
-            title,
-            body,
-            android: {
-                channelId,
-            },
-        });
-    }
-
-    const fetchRequest = async (url, data) => {
+    const fetchRequest = (url, data) => {
         try {
-            return await fetch(url, {
+            return fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Accept': 'application/json',
+                    'Content-Type': 'multipart/form-data'
                 },
                 body: data
             });
         } catch (error) {
             console.log(error)
+            setMessage(`Server Error ${error.message}`)
         }
     }
 
@@ -117,8 +113,8 @@ const UploadScreen = ({ route }) => {
             style={styles.container}
             type='front'>
             <View style={styles.uploadModal}>
-                <Text style={styles.text}>Uploading</Text>
-                <Text style={[styles.text, styles.subText]}>Your Video Is Being Uploaded in Background</Text>
+                <Text style={styles.text}>{uploaded ? 'Uploaded' : 'Uploading'}</Text>
+                <Text style={[styles.text, styles.subText]}>{message}</Text>
             </View>
         </RNCamera>
     )
