@@ -23,16 +23,10 @@ const TabBarNavigation = ({ route }) => {
         setLoading(true)
         firestore().collection('users').doc(documentId).get().then((res) => {
             setQuestions(res.data().questions)
-
-            // const data = res.data()?.questions?.filter(d=>{
-            //     return !d.isCompleted
-            // })
-
-            // setQuestions(data)
-            if (!res.data().response) {
-                dispatch(updateIsCompleted(false))
-            } else {
+            if (res.data().response || res.data().isffmpegProcessing) {
                 dispatch(updateIsCompleted(true))
+            } else {
+                dispatch(updateIsCompleted(false))
             }
             setLoading(false)
         }).catch(err=>console.log(err))
