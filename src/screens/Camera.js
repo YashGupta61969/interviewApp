@@ -1,4 +1,4 @@
-import { StyleSheet, useWindowDimensions, Animated, View, Modal, Text } from 'react-native'
+import { StyleSheet, useWindowDimensions, Animated, View, Modal, Text, BackHandler } from 'react-native'
 import React, { useState, useRef, useEffect } from 'react'
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
 import { RNCamera } from 'react-native-camera';
@@ -28,6 +28,16 @@ const Camera = ({ route, navigation }) => {
     const currentQuestion = data && data.questions && data.questions[questionId];
 
     useEffect(() => {
+        const backAction = () => {
+            return true;
+        };
+        const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress', backAction
+        );
+        return () => backHandler.remove();
+    }, [])
+
+    useEffect(() => {
         position.setValue(0)
         fontSize.setValue(50)
 
@@ -50,7 +60,7 @@ const Camera = ({ route, navigation }) => {
     }, [isFocused, redoModalVisible]);
 
     useEffect(() => {
-        isFocused && setTimeout(() => startRecording(), 400)
+        isFocused && setTimeout(() => startRecording(), 500)
         firestore().collection('users').doc(documentId).get().then((res) => {
             setData(res.data())
         });
@@ -60,7 +70,6 @@ const Camera = ({ route, navigation }) => {
     const translateY = position.interpolate({
         inputRange: [0, 1],
         outputRange: [(height - animatedViewHeight) / 2, height - animatedViewHeight],
-        // extrapolate: "extend",
     });
 
     // Starts Recording Video
@@ -68,7 +77,7 @@ const Camera = ({ route, navigation }) => {
         try {
             const { uri } = await ref.current.recordAsync({
                 orientation: "landscapeLeft",
-                quality:RNCamera.Constants.VideoQuality['720p']
+                quality: RNCamera.Constants.VideoQuality['720p']
             });
             if (uri) {
                 if (redoRef.current) {

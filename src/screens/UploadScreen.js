@@ -1,11 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, useWindowDimensions, BackHandler } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import colors from '../constants/colors'
 import { useDispatch, useSelector } from 'react-redux'
 import { RNCamera } from 'react-native-camera'
 import BackgroundService from 'react-native-background-actions';
-import notifee from '@notifee/react-native'
-import { clearRetries, clearVideoFiles } from '../store/slices/userSlice'
+import { clearRetries, clearVideoFiles, updateIsCompleted } from '../store/slices/userSlice'
 
 const UploadScreen = ({ route }) => {
 
@@ -14,6 +13,7 @@ const UploadScreen = ({ route }) => {
     const { videoFiles, retries } = useSelector(state => state.user)
     const [message, setMessage] = useState('Your Video Is Being Uploaded in Background')
     const [uploaded, setUploaded] = useState(false)
+    const { height, width } = useWindowDimensions()
 
     const options = {
         taskName: 'Upload',
@@ -31,20 +31,20 @@ const UploadScreen = ({ route }) => {
     };
 
     useEffect(() => {
+        const backAction = () => {
+            return true;
+        };
+
+        const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress', backAction
+        );
+        return () => backHandler.remove();
+    }, [])
+
+    useEffect(() => {
         (async () => {
             try {
-                await notifee.createChannel({
-                    id: 'default',
-                    name: 'Default Channel',
-                });
-
-                await notifee.displayNotification({
-                    title: 'Uploading',
-                    body: 'Your Response Is Being Uploaded',
-                    android: {
-                        channelId: 'default',
-                    },
-                });
+                dispatch(updateIsCompleted(false))
                 await BackgroundService.start(uploadVideos, options);
             } catch (error) {
                 setMessage(`Unknown Error ${error.message}`)
@@ -80,16 +80,14 @@ const UploadScreen = ({ route }) => {
 
             videoFiles.length && await fetchRequest(requestUrl, form);
             retries.length && await fetchRequest(retryRequestUrl, retryForm);
-            setMessage('Your Response Is Uploaded')
+            setMessage('Your Response Is Submitted')
             setUploaded(true)
-            await notifee.cancelAllNotifications()
 
             dispatch(clearVideoFiles())
             dispatch(clearRetries())
             await BackgroundService.stop();
         } catch (error) {
             setMessage(`Upload function => ${error.message}`)
-            console.log('background task error', error)
         }
     }
 
@@ -103,7 +101,6 @@ const UploadScreen = ({ route }) => {
                 body: data
             });
         } catch (error) {
-            console.log(error)
             setMessage(`Server Error ${error.message}`)
         }
     }
@@ -112,8 +109,8 @@ const UploadScreen = ({ route }) => {
         <RNCamera
             style={styles.container}
             type='front'>
-            <View style={styles.uploadModal}>
-                <Text style={styles.text}>{uploaded ? 'Uploaded' : 'Uploading'}</Text>
+            <View style={[styles.uploadModal, { width, height }]}>
+                <Text style={styles.text}>{uploaded ? 'Completed' : 'Uploading'}</Text>
                 <Text style={[styles.text, styles.subText]}>{message}</Text>
             </View>
         </RNCamera>
@@ -131,24 +128,24 @@ const styles = StyleSheet.create({
         overflow: 'hidden'
     },
     uploadModal: {
+        backgroundColor: 'rgba(255, 255, 255, 0.4)',
         justifyContent: 'center',
         alignItems: 'center',
-        paddingVertical: 15,
-        paddingHorizontal: 60,
-        borderRadius: 20,
-        borderColor: colors.primary,
-        borderWidth: 1,
-        backgroundColor: 'white',
     },
     text: {
-        fontSize: 30,
-        marginBottom: 6,
-        fontFamily: 'BarlowCondensed-Medium'
+        color: 'white',
+        fontSize: 55,
+        fontFamily: 'BarlowCondensed-SemiBold',
+        textAlign: 'center',
+        letterSpacing: 2,
+        textShadowColor: colors.primary,
+        textShadowOffset: { width: -3, height: -2 },
+        textShadowRadius: 5,
+        marginBottom: 3
     },
     subText: {
-        fontSize: 20,
+        fontSize: 25,
         fontFamily: 'BarlowCondensed-Regular',
         marginBottom: 20,
-        color: colors.grayText
     }
 })
