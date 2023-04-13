@@ -1,23 +1,26 @@
-import { ActivityIndicator, SafeAreaView, View } from 'react-native'
-import React, { useState, useEffect } from 'react'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { ActivityIndicator, View, useWindowDimensions } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
 import firestore from '@react-native-firebase/firestore';
-import Camera from '../screens/Camera';
-import Welcome from '../screens/Welcome';
+import { RNCamera } from 'react-native-camera';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { updateIsCompleted } from '../store/slices/userSlice';
 import colors from '../constants/colors';
+import Welcome from '../screens/Welcome';
+import Camera from '../screens/Camera';
+import { updateIsCompleted } from '../store/slices/userSlice';
 
 const Tab = createMaterialTopTabNavigator();
 
 const TabBarNavigation = ({ route }) => {
-    const { isCompleted } = useSelector(state => state.user)
+    const ref = useRef();
+    const { isCompleted, isSolo } = useSelector(state => state.user)
     const { link } = route.params;
     const documentId = link.split('data=')[1];
     const [questions, setQuestions] = useState([])
     const [loading, setLoading] = useState(false)
     const dispatch = useDispatch()
+    const { width, height } = useWindowDimensions();
 
     useEffect(() => {
         setLoading(true)
@@ -29,7 +32,7 @@ const TabBarNavigation = ({ route }) => {
                 dispatch(updateIsCompleted(false))
             }
             setLoading(false)
-        }).catch(err=>console.log(err))
+        }).catch(err => console.log(err))
     }, [link])
 
     if (loading) {
@@ -39,19 +42,27 @@ const TabBarNavigation = ({ route }) => {
     }
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
+        <RNCamera
+            ref={ref}
+            style={{ width, height, overflow: 'hidden' }}
+            type={isSolo ? 'front' : 'back'}>
+
             <Tab.Navigator backBehavior='none' screenOptions={{
                 tabBarStyle: { display: 'none' },
-                swipeEnabled: !isCompleted
-            }}>
-                <Tab.Screen name={`Welcome`} component={Welcome} initialParams={{ link }} />
+                swipeEnabled: !isCompleted,
+            }} sceneContainerStyle={{ backgroundColor: 'transparent' }}>
+                <Tab.Screen name='Welcome' component={Welcome} initialParams={{ link }} />
                 {
-                    questions && questions.map(d => {
-                        return <Tab.Screen name={`Camera${d.id}`} component={Camera} initialParams={{ link, questionId: d.id }} key={d.id} />
-                    })
+                    questions && questions.map((d, i, arr) => (
+                        <Tab.Screen name={`Camera ${i}`} initialParams={{ link }} key={d.id}>
+                            {props => <Camera {...props} ref={ref} question={d.value} isLastIndex={arr.length === i + 1} />}
+                        </Tab.Screen>
+                    ))
                 }
+
+                {/* <Tab.Screen name='Upload' component={UploadScreen} initialParams={{ link }} /> */}
             </Tab.Navigator>
-        </SafeAreaView>
+        </RNCamera>
     )
 }
 

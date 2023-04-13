@@ -1,26 +1,32 @@
-import { StyleSheet, Text, useWindowDimensions, View, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, useWindowDimensions, View, ActivityIndicator, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import firestore from '@react-native-firebase/firestore';
-import { RNCamera } from 'react-native-camera';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { useIsFocused } from '@react-navigation/native';
 import notifee from '@notifee/react-native';
 import colors from '../constants/colors';
+import { useDispatch, useSelector } from 'react-redux';
+import { setIsSolo } from '../store/slices/userSlice';
 
 const Welcome = ({ route }) => {
     const isFocused = useIsFocused()
     const { link } = route.params;
     const documentId = link.split('data=')[1];
     const { height, width } = useWindowDimensions();
+    const {isSolo} = useSelector(state=>state.user)
+    const dispatch  = useDispatch();
 
     const [showInfo, setShowInfo] = useState(false)
     const [data, setData] = useState({})
     const [areQuestionsAvailable, setAreQuestionsAvailable] = useState(true)
     const [loading, setLoading] = useState(false)
+    const welcomeMessage = link === 'empty ' ? 'Thank You' : `WELCOME ${data.name?.toUpperCase()}`;
 
+    // Will Remove this useEffect and get The data from tab navigator as a route.params
     useEffect(() => {
         if (isFocused) {
             setLoading(true)
+            setTimeout(() => setShowInfo(true), 2000)
             firestore().collection('users').doc(documentId).get().then((res) => {
                 setData(res.data())
                 if (res.data().response || res.data().isffmpegProcessing) {
@@ -39,27 +45,37 @@ const Welcome = ({ route }) => {
         </View>
     }
 
-    const welcomeMessage = link === 'empty' ? 'Thank You' : `WELCOME ${data.name?.toUpperCase()}`;
-
     // Returns Camera Screen Option When Questions Are Available 
     return (
         <>
             {!showInfo && <MaterialIcons name='menu' color={colors.primary} size={40} style={styles.infoIcon} onPress={() => setShowInfo(true)} />}
 
             {
-                showInfo && <View style={styles.infoModal}>
-                    <MaterialIcons name='cancel' color={colors.primary} size={40} style={styles.infoIcon} onPress={() => setShowInfo(false)} />
-                    <Text style={styles.infoText}>1. PREPARE YOUR FRAMING TO BE RECORDED</Text>
-                    <Text style={styles.infoText}>2. SWIPE &lt;--- TO ANSWER 1ST QUESTION</Text>
-                    <Text style={styles.infoText}>3. SWIPE &lt;--- EACH TIME FOR NEXT QUESTION</Text>
-                    <Text style={styles.infoText}>4. SIGN AND SWIPE &lt;--- TO SUBMIT</Text>
-                    <Text style={styles.infoText}>5. SWIPE ---&gt; TO REDO // TOUCH SCREEN TO PAUSE</Text>
+                showInfo && <View style={{ width, height, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'space-between', paddingVertical: 15 }}>
+                    <View style={[styles.infoModal, { width }]}>
+                        <MaterialIcons name='cancel' color={colors.primary} size={40} style={styles.infoIcon} onPress={() => setShowInfo(false)} />
+                        <Text style={styles.infoText}>1. PREPARE YOUR FRAMING TO BE RECORDED</Text>
+                        <Text style={styles.infoText}>2. SWIPE &lt;--- TO ANSWER 1ST QUESTION</Text>
+                        <Text style={styles.infoText}>3. SWIPE &lt;--- EACH TIME FOR NEXT QUESTION</Text>
+                        <Text style={styles.infoText}>4. SIGN AND SWIPE &lt;--- TO SUBMIT</Text>
+                        <Text style={styles.infoText}>5. SWIPE ---&gt; TO REDO // TOUCH SCREEN TO PAUSE</Text>
+                    </View>
+
+                    <View style={styles.buttonContainer}>
+                        <Text style={{ color: colors.primary, fontSize: 30, fontFamily: 'BarlowCondensed-Medium'}}>Select Mode</Text>
+                        <View style={styles.buttonsWrapper}>
+                            <TouchableOpacity style={[styles.button, isSolo && styles.active]} onPress={() => dispatch(setIsSolo(true))}>
+                                <Text style={styles.buttonText}>Solo</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.button, !isSolo && styles.active]} onPress={() => dispatch(setIsSolo(false))}>
+                                <Text style={styles.buttonText}>Collab</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
                 </View>
             }
 
-            <RNCamera
-                style={{ width, height, overflow: 'hidden' }}
-                type='front'>
+            <View style={{ width, height, backgroundColor: 'transparent' }}>
                 {
                     !showInfo && (link === 'empty' || !areQuestionsAvailable ? <View style={styles.container}>
                         <Text style={styles.welcomeText}>{welcomeMessage}</Text>
@@ -69,7 +85,7 @@ const Welcome = ({ route }) => {
                         <Text style={styles.welcomeText}>{data.name?.toUpperCase()}</Text>
                     </View>)
                 }
-            </RNCamera>
+            </View>
         </>
     )
 }
@@ -99,19 +115,11 @@ const styles = StyleSheet.create({
         top: 10
     },
     infoModal: {
-        position: 'absolute',
-        zIndex: 6000,
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.6)',
-        justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     infoText: {
         color: colors.primary,
-        fontSize: 35,
+        fontSize: 32,
         textAlign: 'center',
         fontFamily: 'BarlowCondensed-Medium',
     },
@@ -124,5 +132,32 @@ const styles = StyleSheet.create({
         textShadowColor: colors.primary,
         textShadowOffset: { width: -2, height: -1 },
         textShadowRadius: 5,
+    },
+    buttonContainer: {
+        alignItems: 'center',
+        marginTop: 20
+    },
+    buttonsWrapper: {
+        flexDirection: 'row',
+        marginTop: 5,
+        borderRadius: 20,
+        borderColor: colors.primary,
+        borderWidth: 1
+    },
+    button: {
+        paddingVertical: 5,
+        width: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: 500,
+        fontSize: 20,
+        fontFamily: 'BarlowCondensed-Medium',
+    },
+    active: {
+        borderRadius: 20,
+        backgroundColor: colors.primary
     }
 })

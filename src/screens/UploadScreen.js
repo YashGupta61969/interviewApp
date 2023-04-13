@@ -56,7 +56,9 @@ const UploadScreen = ({ route }) => {
         try {
             const form = new FormData()
             const retryForm = new FormData()
-
+            
+            form.append('documentId', documentId)
+            retryForm.append('documentId', documentId)
             retries.forEach((vid) => {
                 retryForm.append('video', {
                     uri: vid.uri,
@@ -64,7 +66,6 @@ const UploadScreen = ({ route }) => {
                     name: vid.name
                 })
             })
-            retryForm.append('documentId', documentId)
 
             videoFiles.forEach((vid) => {
                 form.append('video', {
@@ -73,7 +74,6 @@ const UploadScreen = ({ route }) => {
                     name: vid.name
                 })
             })
-            form.append('documentId', documentId)
 
             const requestUrl = 'http://142.93.219.133/video-app/';
             const retryRequestUrl = 'http://142.93.219.133/video-app/retry';
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'black',
+        // backgroundColor: 'black',
         overflow: 'hidden'
     },
     uploadModal: {

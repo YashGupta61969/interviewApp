@@ -1,32 +1,30 @@
 import { StyleSheet, useWindowDimensions, Animated, View, Modal, Text, BackHandler } from 'react-native'
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, forwardRef } from 'react'
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
-import { RNCamera } from 'react-native-camera';
-import firestore from '@react-native-firebase/firestore';
 import { useIsFocused } from '@react-navigation/native';
-import { Swipeable } from 'react-native-gesture-handler';
 import Entypo from 'react-native-vector-icons/Entypo'
 import { useDispatch } from 'react-redux';
 import { addRetries, addVideoFile, updateIsCompleted } from '../store/slices/userSlice';
 import colors from '../constants/colors';
+import { RNCamera } from 'react-native-camera';
+import { Swipeable } from 'react-native-gesture-handler';
 
-const Camera = ({ route, navigation }) => {
-    const ref = useRef();
+const Camera = forwardRef(({ route, navigation, question, isLastIndex }, ref) => {
     const redoRef = useRef(false)
     const swipeRef = useRef();
+    const positionRef = useRef(new Animated.Value(0))
+    const fontSize = useRef(new Animated.Value(45))
     const { width, height } = useWindowDimensions();
-    const { link, questionId } = route.params;
+    const { link } = route.params;
     const isFocused = useIsFocused();
     const documentId = link.split('data=')[1];
     const dispatch = useDispatch()
 
-    const [position] = useState(new Animated.Value(0));
-    const [fontSize] = useState(new Animated.Value(45));
     const [redoModalVisible, setRedoModalVisible] = useState(false)
-    const [data, setData] = useState({})
     const [animatedViewHeight, setAnimatedViewHeight] = useState(0)
-    const currentQuestion = data && data.questions && data.questions[questionId];
+    const currentQuestionId = +route.name.split(' ')[1]
 
+    // Disable Back Press
     useEffect(() => {
         const backAction = () => {
             return true;
@@ -37,37 +35,34 @@ const Camera = ({ route, navigation }) => {
         return () => backHandler.remove();
     }, [])
 
+    // Starts Animations
     useEffect(() => {
-        position.setValue(0)
-        fontSize.setValue(50)
+        positionRef.current.setValue(0)
+        fontSize.current.setValue(50)
 
         // Text Animations
-        Animated.timing(position, {
+        Animated.timing(positionRef.current, {
             toValue: 1,
             duration: 1500,
             delay: 2500,
             useNativeDriver: true,
         }).start()
 
-        Animated.timing(fontSize, {
+        Animated.timing(fontSize.current, {
             toValue: 26,
             duration: 1500,
             delay: 2500,
             useNativeDriver: false,
         }).start()
-
-        // Fetches the question from firebase
     }, [isFocused, redoModalVisible]);
 
+    // Starts Recording After a second
     useEffect(() => {
-        isFocused && setTimeout(() => startRecording(), 500)
-        firestore().collection('users').doc(documentId).get().then((res) => {
-            setData(res.data())
-        });
+        isFocused && setTimeout(() => startRecording(), 1000)
     }, [isFocused])
 
     // Translates Question Text From Center to Bottom With Ansimation
-    const translateY = position.interpolate({
+    const translateY = positionRef.current.interpolate({
         inputRange: [0, 1],
         outputRange: [(height - animatedViewHeight) / 2, height - animatedViewHeight],
     });
@@ -83,25 +78,23 @@ const Camera = ({ route, navigation }) => {
                 if (redoRef.current) {
                     redoRef.current = false;
                     dispatch(addRetries({
-                        name: `${currentQuestion.value}~${currentQuestion.id}`,
+                        name: `${question}~4`,
                         uri,
                     }))
-                    return setTimeout(() => startRecording(), 400)
+                    return setTimeout(() => startRecording(), 1000)
                 }
 
                 dispatch(addVideoFile({
-                    name: `${currentQuestion.value}~${currentQuestion.id}`,
+                    name: `${question}~2`,
                     uri,
                 }))
-                const questions = data.questions;
-                const isLastIndex = questions[questions.length - 1].id === currentQuestion.id;
 
                 // Checks if The Questions are answered
                 if (isLastIndex) {
                     dispatch(updateIsCompleted(true))
                     navigation.navigate('Upload', { documentId })
                 } else {
-                    navigation.navigate(`Camera${questionId + 1}`)
+                    navigation.navigate(`Camera ${currentQuestionId + 1}`)
                 }
             }
         } catch (error) {
@@ -109,38 +102,35 @@ const Camera = ({ route, navigation }) => {
         }
     }
 
+    // Sets height of animated text
+    const onLayout = ({ nativeEvent }) => {
+        const heightOfView = nativeEvent.layout.height
+        setAnimatedViewHeight(heightOfView)
+    }
+
     // Listener on Swipe
-    const onSwipeableOpen = async (direction) => {
+    const onSwipeableOpen = (direction) => {
         swipeRef.current.close();
         if (direction === 'left') {
             setRedoModalVisible(true)
         } else {
-            await ref.current.stopRecording();
+            ref.current.stopRecording()
         }
     }
 
-    // Sets height of animated text
-    const onLayout = (event) => {
-        const heightOfView = event.nativeEvent.layout.height
-        setAnimatedViewHeight(heightOfView)
-    }
-
     {/* Camera View */ }
-    if (data && data.questions && isFocused) return (
+    if (isFocused) return (
         <Swipeable
             ref={swipeRef}
             onSwipeableOpen={onSwipeableOpen}
-            renderLeftActions={() => <View style={{ width: width / 3, backgroundColor: 'black' }} />}
-            renderRightActions={() => <View style={{ width: width / 3, backgroundColor: 'black' }} />}
+            renderLeftActions={() => <View style={{ width: width / 3 }} />}
+            renderRightActions={() => <View style={{ width: width / 3 }} />}
         >
-            <RNCamera
-                ref={ref}
-                style={{ width, height, overflow: 'hidden' }}
-                type='front'>
+            <View style={{ width, height }}>
 
                 {/* Animated Text */}
                 {!redoModalVisible && <Animated.View style={[styles.question, { transform: [{ translateY }] }]} onLayout={onLayout}>
-                    <Animated.Text style={[styles.questionText, { fontSize }]}>{currentQuestion?.value}</Animated.Text>
+                    <Animated.Text style={[styles.questionText, { fontSize: fontSize.current }]}>{question}</Animated.Text>
                 </Animated.View>}
 
                 {/* Redo Modal */}
@@ -149,17 +139,12 @@ const Camera = ({ route, navigation }) => {
                     transparent={true}
                     visible={redoModalVisible}>
 
-                    <View style={{ ...styles.modal, height, width }}>
+                    <View style={[styles.modal, { height, width }]}>
                         <Text style={styles.redoText}>Redo Question</Text>
                         <View style={styles.icons}>
                             <MaterialCommunity name={'check'} size={80} color={colors.primary} onPress={async () => {
                                 redoRef.current = true
                                 setRedoModalVisible(false)
-                                try {
-                                    await ref.current.stopRecording();
-                                } catch (err) {
-                                    console.log(err)
-                                }
                             }} />
                             <Entypo name={'cross'} size={80} color={colors.primary} onPress={() => {
                                 setRedoModalVisible(false)
@@ -167,10 +152,11 @@ const Camera = ({ route, navigation }) => {
                         </View>
                     </View>
                 </Modal>
-            </RNCamera>
+                
+            </View>
         </Swipeable>
     )
-}
+})
 
 export default Camera
 

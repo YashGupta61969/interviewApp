@@ -3,7 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     isCompleted: false,
     videoFiles: [],
-    retries: []
+    retries: [],
+    isSolo: true
 }
 
 const userSlice = createSlice({
@@ -19,10 +20,13 @@ const userSlice = createSlice({
         addRetries: (state, { payload }) => {
             state.retries.push(payload)
         },
-        clearVideoFiles:(state)=>{
+        setIsSolo: (state, { payload }) => {
+            state.isSolo = payload
+        },
+        clearVideoFiles: (state) => {
             state.videoFiles = []
         },
-        clearRetries:(state)=>{
+        clearRetries: (state) => {
             state.retries = []
         },
     }
@@ -30,4 +34,4 @@ const userSlice = createSlice({
 
 export default userSlice.reducer
 
-export const { updateIsCompleted, addVideoFile, addRetries, clearRetries, clearVideoFiles } = userSlice.actions
+export const { updateIsCompleted, addVideoFile, addRetries, clearRetries, clearVideoFiles, setIsSolo } = userSlice.actions
