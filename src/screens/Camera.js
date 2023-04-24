@@ -110,8 +110,8 @@ const Camera = forwardRef(({ route, navigation, question, isLastIndex }, ref) =>
 
     // Listener on Swipe
     const onSwipeableOpen = (direction) => {
-        swipeRef.current.close();
         if (direction === 'left') {
+            swipeRef.current.close();
             setRedoModalVisible(true)
         } else {
             ref.current.stopRecording()
@@ -124,7 +124,7 @@ const Camera = forwardRef(({ route, navigation, question, isLastIndex }, ref) =>
             ref={swipeRef}
             onSwipeableOpen={onSwipeableOpen}
             renderLeftActions={() => <View style={{ width: width / 3 }} />}
-            renderRightActions={() => <View style={{ width: width / 3 }} />}
+            renderRightActions={() => <View style={{ width:width - 300 }} />}
         >
             <View style={{ width, height }}>
 

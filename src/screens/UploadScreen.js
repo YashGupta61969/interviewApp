@@ -10,7 +10,7 @@ const UploadScreen = ({ route }) => {
 
     const dispatch = useDispatch()
     const { documentId } = route.params;
-    const { videoFiles, retries } = useSelector(state => state.user)
+    const { videoFiles, retries, isColorful } = useSelector(state => state.user)
     const [message, setMessage] = useState('Your Video Is Being Uploaded in Background')
     const [uploaded, setUploaded] = useState(false)
     const { height, width } = useWindowDimensions()
@@ -58,6 +58,7 @@ const UploadScreen = ({ route }) => {
             const retryForm = new FormData()
             
             form.append('documentId', documentId)
+            form.append('isColorful', isColorful ? 'yes' : 'no')
             retryForm.append('documentId', documentId)
             retries.forEach((vid) => {
                 retryForm.append('video', {
@@ -75,8 +76,8 @@ const UploadScreen = ({ route }) => {
                 })
             })
 
-            const requestUrl = 'http://142.93.219.133/video-app/';
-            const retryRequestUrl = 'http://142.93.219.133/video-app/retry';
+            const requestUrl = 'http://13.127.161.46:8080/';
+            const retryRequestUrl = 'http://13.127.161.46:8080/retry';
 
             videoFiles.length && await fetchRequest(requestUrl, form);
             retries.length && await fetchRequest(retryRequestUrl, retryForm);
@@ -124,11 +125,10 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: 'black',
         overflow: 'hidden'
     },
     uploadModal: {
-        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
         justifyContent: 'center',
         alignItems: 'center',
     },

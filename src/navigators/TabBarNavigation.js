@@ -59,8 +59,6 @@ const TabBarNavigation = ({ route }) => {
                         </Tab.Screen>
                     ))
                 }
-
-                {/* <Tab.Screen name='Upload' component={UploadScreen} initialParams={{ link }} /> */}
             </Tab.Navigator>
         </RNCamera>
     )

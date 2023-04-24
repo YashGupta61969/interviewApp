@@ -40,11 +40,11 @@
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>NSCameraUsageDescription</key>
-    <string>Your own description of the purpose</string>
+	<string>$(PRODUCT_NAME) needs access to your Camera.</string>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
-    <array>
-     <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-    </array>
+	<array>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	</array>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -63,15 +63,10 @@
 		<string>BarlowCondensed-Bold.ttf</string>
 		<string>BarlowCondensed-ExtraBold.ttf</string>
 		<string>BarlowCondensed-Medium.ttf</string>
-		<string>BarlowCondensed-MediumItalic.ttf</string>
 		<string>BarlowCondensed-Regular.ttf</string>
 		<string>BarlowCondensed-SemiBold.ttf</string>
 	</array>
-	<key>NSCameraUsageDescription</key>
-    <string>$(PRODUCT_NAME) needs access to your Camera.</string>
-
-    <!-- optionally, if you want to record audio: -->
-    <key>NSMicrophoneUsageDescription</key>
-    <string>$(PRODUCT_NAME) needs access to your Microphone.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>$(PRODUCT_NAME) needs access to your Microphone.</string>
 </dict>
 </plist>
