@@ -8,9 +8,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setIsColorful, setIsSolo } from '../store/slices/userSlice';
 
 const Welcome = ({ route }) => {
-    const isFocused = useIsFocused()
-    const [firstPoldRotate] = useState(new Animated.Value(0))
-    const [secondPoleRotate] = useState(new Animated.Value(0))
+    const isFocused = useIsFocused();
+    const [firstPoldRotate] = useState(new Animated.Value(0));
+    const [secondPoleRotate] = useState(new Animated.Value(0));
     const [firstPoleTranslate] = useState(new Animated.Value(0));
     const [secondPoleTranslate] = useState(new Animated.Value(0));
     const [opacity] = useState(new Animated.Value(1));
@@ -18,7 +18,7 @@ const Welcome = ({ route }) => {
     const { link } = route.params;
     const documentId = link.split('data=')[1];
     const { height, width } = useWindowDimensions();
-    const { isSolo, isColorful } = useSelector(state => state.user)
+    const { isSolo } = useSelector(state => state.user)
     const dispatch = useDispatch();
 
     const [showInfo, setShowInfo] = useState(false)
@@ -51,100 +51,82 @@ const Welcome = ({ route }) => {
         if (!showInfo) {
             firstPoldRotate.setValue(0)
             secondPoleRotate.setValue(0)
-            opacity.setValue(1)
 
             Animated.timing(
-                firstPoleTranslate,
-                {
-                    toValue: 14,
-                    duration: 500,
-                    easing: Easing.ease,
-                    useNativeDriver: true,
-                }
-            ).start();
+                firstPoleTranslate, {
+                toValue: 11,
+                duration: 250,
+                easing: Easing.ease,
+                useNativeDriver: true,
+            }).start();
             Animated.timing(
-                secondPoleTranslate,
-                {
-                    toValue: -14,
-                    duration: 500,
-                    easing: Easing.ease,
-                    useNativeDriver: true,
-                }
-            ).start();
+                secondPoleTranslate, {
+                toValue: -11,
+                duration: 250,
+                easing: Easing.ease,
+                useNativeDriver: true,
+            }).start();
             Animated.timing(
-                firstPoldRotate,
-                {
-                    toValue: 1,
-                    duration: 500,
-                    easing: Easing.linear,
-                    useNativeDriver: true,
-                }
-            ).start();
+                firstPoldRotate, {
+                toValue: 1,
+                duration: 250,
+                easing: Easing.linear,
+                useNativeDriver: true,
+            }).start();
 
             Animated.timing(
-                secondPoleRotate,
-                {
-                    toValue: 1,
-                    duration: 500,
-                    easing: Easing.linear,
-                    useNativeDriver: true,
-                }
-            ).start();
+                secondPoleRotate, {
+                toValue: 1,
+                duration: 250,
+                easing: Easing.linear,
+                useNativeDriver: true,
+            }).start();
             Animated.timing(
                 opacity,
                 {
                     toValue: 0,
-                    duration: 500,
+                    duration: 250,
                     useNativeDriver: true,
                 }
             ).start();
         } else {
             firstPoldRotate.setValue(1)
             secondPoleRotate.setValue(1)
-            opacity.setValue(0)
 
             Animated.timing(
-                firstPoleTranslate,
-                {
-                    toValue: 0,
-                    duration: 500,
-                    easing: Easing.ease,
-                    useNativeDriver: true,
-                }
-            ).start();
+                firstPoleTranslate, {
+                toValue: 0,
+                duration: 250,
+                easing: Easing.ease,
+                useNativeDriver: true,
+            }).start();
             Animated.timing(
-                secondPoleTranslate,
-                {
-                    toValue: 0,
-                    duration: 500,
-                    easing: Easing.ease,
-                    useNativeDriver: true,
-                }
-            ).start();
+                secondPoleTranslate, {
+                toValue: 0,
+                duration: 250,
+                easing: Easing.ease,
+                useNativeDriver: true,
+            }).start();
 
             Animated.timing(
-                firstPoldRotate,
-                {
-                    toValue: 0,
-                    duration: 500,
-                    easing: Easing.linear,
-                    useNativeDriver: true,
-                }
-            ).start();
+                firstPoldRotate, {
+                toValue: 0,
+                duration: 250,
+                easing: Easing.linear,
+                useNativeDriver: true,
+            }).start();
             Animated.timing(
-                secondPoleRotate,
-                {
-                    toValue: 0,
-                    duration: 500,
-                    easing: Easing.linear,
-                    useNativeDriver: true,
-                }
-            ).start();
+                secondPoleRotate, {
+                toValue: 0,
+                duration: 250,
+                easing: Easing.linear,
+                useNativeDriver: true,
+            }).start();
             Animated.timing(
                 opacity,
                 {
                     toValue: 1,
-                    duration: 500,
+                    duration: 250,
                     useNativeDriver: true,
                 }
             ).start();
@@ -171,9 +153,10 @@ const Welcome = ({ route }) => {
     return (
         <>
             <TouchableOpacity style={styles.infoIcon} activeOpacity={1} onPress={startAnimation}>
-                <Animated.View style={[styles.infoIconBar, { top: 0, transform: [{ rotate: firstPoleSpin }, { translateY: firstPoleTranslate }] }]} />
-                <Animated.View style={[styles.infoIconBar, { top: 11, opacity }]} />
-                <Animated.View style={[styles.infoIconBar, { top: 22, transform: [{ rotate: secondPoleSpin }, { translateY: secondPoleTranslate }] }]} />
+                <Animated.View style={[styles.infoIconBar, { top: 0,opacity, transform: [{ translateY: firstPoleTranslate }] }]} />
+                <Animated.View style={[styles.infoIconBar, { top: 11, transform: [{ rotate: firstPoleSpin }] }]} />
+                <Animated.View style={[styles.infoIconBar, { top: 11, transform: [{ rotate: secondPoleSpin }] }]} />
+                <Animated.View style={[styles.infoIconBar, { top: 22,opacity, transform: [{ translateY: secondPoleTranslate }] }]} />
             </TouchableOpacity>
 
             {
@@ -185,28 +168,15 @@ const Welcome = ({ route }) => {
                         <Text style={styles.infoText}>4. SWIPE ---&gt; TO REDO // TOUCH SCREEN TO PAUSE</Text>
                     </View>
 
-                    <View style={styles.buttons}>
-                        <View style={styles.buttonContainer}>
-                            <Text style={styles.buttonLabel}>Select Mode</Text>
-                            <View style={styles.buttonsWrapper}>
-                                <TouchableOpacity style={[styles.button, isSolo && styles.active]} onPress={() => dispatch(setIsSolo(true))}>
-                                    <Text style={styles.buttonText}>Solo</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={[styles.button, !isSolo && styles.active]} onPress={() => dispatch(setIsSolo(false))}>
-                                    <Text style={styles.buttonText}>Collab</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                        <View style={styles.buttonContainer}>
-                            <Text style={[styles.buttonLabel]}>Select Theme</Text>
-                            <View style={styles.buttonsWrapper}>
-                                <TouchableOpacity style={[styles.button, isColorful && styles.active]} onPress={() => dispatch(setIsColorful(true))}>
-                                    <Text style={styles.buttonText}>Colorful</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={[styles.button, !isColorful && styles.active]} onPress={() => dispatch(setIsColorful(false))}>
-                                    <Text style={styles.buttonText}>Black & White</Text>
-                                </TouchableOpacity>
-                            </View>
+                    <View style={styles.buttonContainer}>
+                        <Text style={styles.buttonLabel}>Select Mode</Text>
+                        <View style={styles.buttonsWrapper}>
+                            <TouchableOpacity style={[styles.button, isSolo && styles.active]} onPress={() => dispatch(setIsSolo(true))}>
+                                <Text style={[styles.buttonText, !isSolo && { color: colors.primary }]}>SOLO</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.button, !isSolo && styles.active]} onPress={() => dispatch(setIsSolo(false))}>
+                                <Text style={[styles.buttonText, isSolo && { color: colors.primary }]}>COLLAB</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </View>
@@ -236,8 +206,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     mainContainer: {
-        backgroundColor: 'rgba(0,0,0,0.6)',
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
         alignItems: 'center',
+        justifyContent: 'center',
         paddingVertical: 15
     },
     welcomeText: {
@@ -262,9 +233,9 @@ const styles = StyleSheet.create({
     },
     infoIconBar: {
         backgroundColor: colors.primary,
-        width: 40, 
+        width: 40,
         height: 5,
-        borderRadius:6,
+        borderRadius: 6,
         position: 'absolute',
         right: 5,
     },
@@ -287,13 +258,9 @@ const styles = StyleSheet.create({
         textShadowOffset: { width: -2, height: -1 },
         textShadowRadius: 5,
     },
-    buttons:{
-        gap: 20, 
-        alignItems: 'center', 
-        marginTop: 35
-    },
     buttonContainer: {
         flexDirection: 'row',
+        marginTop: 40
     },
     buttonsWrapper: {
         flexDirection: 'row',
