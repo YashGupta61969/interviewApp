@@ -1,19 +1,18 @@
-import { StyleSheet, Text, useWindowDimensions, View, ActivityIndicator, TouchableOpacity, Animated, Easing } from 'react-native'
+import { StyleSheet, Text, useWindowDimensions, View, ActivityIndicator, TouchableOpacity, Animated, Easing, PermissionsAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import firestore from '@react-native-firebase/firestore';
 import { useIsFocused } from '@react-navigation/native';
-import notifee from '@notifee/react-native';
-import colors from '../constants/colors';
 import { useDispatch, useSelector } from 'react-redux';
-import { setIsColorful, setIsSolo } from '../store/slices/userSlice';
+import { setIsSolo } from '../store/slices/userSlice';
+import { colors, fontFamily, fontSizes } from '../constants/constants';
 
 const Welcome = ({ route }) => {
     const isFocused = useIsFocused();
+    const [opacity] = useState(new Animated.Value(1));
     const [firstPoldRotate] = useState(new Animated.Value(0));
     const [secondPoleRotate] = useState(new Animated.Value(0));
     const [firstPoleTranslate] = useState(new Animated.Value(0));
     const [secondPoleTranslate] = useState(new Animated.Value(0));
-    const [opacity] = useState(new Animated.Value(1));
 
     const { link } = route.params;
     const documentId = link.split('data=')[1];
@@ -41,9 +40,17 @@ const Welcome = ({ route }) => {
                     setAreQuestionsAvailable(true)
                 }
             }).catch(err => console.log(err)).finally(() => setLoading(false))
-            notifee.requestPermission();
+            requestPermission()
         }
     }, [isFocused, link]);
+
+    const requestPermission = async () => {
+        try {
+            await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const startAnimation = () => {
         setShowInfo(prev => !prev);
@@ -153,10 +160,10 @@ const Welcome = ({ route }) => {
     return (
         <>
             <TouchableOpacity style={styles.infoIcon} activeOpacity={1} onPress={startAnimation}>
-                <Animated.View style={[styles.infoIconBar, { top: 0,opacity, transform: [{ translateY: firstPoleTranslate }] }]} />
+                <Animated.View style={[styles.infoIconBar, { top: 0, opacity, transform: [{ translateY: firstPoleTranslate }]}]} />
                 <Animated.View style={[styles.infoIconBar, { top: 11, transform: [{ rotate: firstPoleSpin }] }]} />
                 <Animated.View style={[styles.infoIconBar, { top: 11, transform: [{ rotate: secondPoleSpin }] }]} />
-                <Animated.View style={[styles.infoIconBar, { top: 22,opacity, transform: [{ translateY: secondPoleTranslate }] }]} />
+                <Animated.View style={[styles.infoIconBar, { top: 22, opacity, transform: [{ translateY: secondPoleTranslate }]}]} />
             </TouchableOpacity>
 
             {
@@ -214,7 +221,7 @@ const styles = StyleSheet.create({
     welcomeText: {
         color: 'white',
         fontSize: 55,
-        fontFamily: 'BarlowCondensed-SemiBold',
+        fontFamily: fontFamily.semiBold,
         textAlign: 'center',
         letterSpacing: 2,
         textShadowColor: colors.primary,
@@ -246,14 +253,17 @@ const styles = StyleSheet.create({
         color: colors.primary,
         fontSize: 32,
         textAlign: 'center',
-        fontFamily: 'BarlowCondensed-Medium',
+        fontFamily: fontFamily.medium,
+        textShadowColor: 'rgba(0,0,0,0.2)',
+        textShadowOffset: { width: -1, height: -1 },
+        textShadowRadius: 5,
     },
     interviewCompleteText: {
         marginTop: 12,
-        fontSize: 22,
+        fontSize: fontSizes.small,
         paddingHorizontal: 10,
         color: 'white',
-        fontFamily: 'BarlowCondensed-Medium',
+        fontFamily: fontFamily.medium,
         textShadowColor: colors.primary,
         textShadowOffset: { width: -2, height: -1 },
         textShadowRadius: 5,
@@ -271,8 +281,8 @@ const styles = StyleSheet.create({
     },
     buttonLabel: {
         color: colors.primary,
-        fontSize: 30,
-        fontFamily: 'BarlowCondensed-Medium'
+        fontSize: fontSizes.small,
+        fontFamily: fontFamily.medium
     },
     button: {
         paddingVertical: 5,
@@ -283,8 +293,8 @@ const styles = StyleSheet.create({
     buttonText: {
         color: 'white',
         fontWeight: 500,
-        fontSize: 20,
-        fontFamily: 'BarlowCondensed-Medium',
+        fontSize: fontSizes.extraSmall,
+        fontFamily: fontFamily.medium,
     },
     active: {
         borderRadius: 20,

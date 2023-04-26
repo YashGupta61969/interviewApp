@@ -52,7 +52,7 @@ const App = () => {
   return <GestureHandlerRootView style={{ flex: 1 }}>
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator ges screenOptions={{
+        <Stack.Navigator screenOptions={{
           headerShown: false,
           animation: 'slide_from_right',
           gestureDirection: 'vertical',

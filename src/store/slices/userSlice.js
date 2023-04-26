@@ -24,9 +24,6 @@ const userSlice = createSlice({
         setIsSolo: (state, { payload }) => {
             state.isSolo = payload
         },
-        setIsColorful: (state, { payload }) => {
-            state.isColorful = payload
-        },
         clearVideoFiles: (state) => {
             state.videoFiles = []
         },
@@ -38,4 +35,4 @@ const userSlice = createSlice({
 
 export default userSlice.reducer
 
-export const { updateIsCompleted, addVideoFile, addRetries, clearRetries, clearVideoFiles, setIsSolo, setIsColorful } = userSlice.actions
+export const { updateIsCompleted, addVideoFile, addRetries, clearRetries, clearVideoFiles, setIsSolo } = userSlice.actions

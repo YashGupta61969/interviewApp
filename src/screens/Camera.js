@@ -5,9 +5,9 @@ import { useIsFocused } from '@react-navigation/native';
 import Entypo from 'react-native-vector-icons/Entypo'
 import { useDispatch } from 'react-redux';
 import { addRetries, addVideoFile, updateIsCompleted } from '../store/slices/userSlice';
-import colors from '../constants/colors';
 import { RNCamera } from 'react-native-camera';
 import { Swipeable } from 'react-native-gesture-handler';
+import { colors, fontFamily, fontSizes } from '../constants/constants';
 
 const Camera = forwardRef(({ route, navigation, question, isLastIndex }, ref) => {
     const redoRef = useRef(false)
@@ -81,7 +81,7 @@ const Camera = forwardRef(({ route, navigation, question, isLastIndex }, ref) =>
                         name: `${question}~4`,
                         uri,
                     }))
-                    return setTimeout(() => startRecording(), 1000)
+                    return setTimeout(startRecording, 1000)
                 }
 
                 dispatch(addVideoFile({
@@ -124,7 +124,7 @@ const Camera = forwardRef(({ route, navigation, question, isLastIndex }, ref) =>
             ref={swipeRef}
             onSwipeableOpen={onSwipeableOpen}
             renderLeftActions={() => <View style={{ width: width / 3 }} />}
-            renderRightActions={() => <View style={{ width:width - 300 }} />}
+            renderRightActions={() => <View style={{ width: width - 200 }} />}
         >
             <View style={{ width, height }}>
 
@@ -152,7 +152,7 @@ const Camera = forwardRef(({ route, navigation, question, isLastIndex }, ref) =>
                         </View>
                     </View>
                 </Modal>
-                
+
             </View>
         </Swipeable>
     )
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
         textShadowOffset: { width: 4, height: 4 },
         textShadowRadius: 10,
         zIndex: 8,
-        fontFamily: 'BarlowCondensed-SemiBold',
+        fontFamily: fontFamily.semiBold,
     },
     modal: {
         backgroundColor: 'rgba(255, 255, 255, 0.4)',
@@ -185,8 +185,8 @@ const styles = StyleSheet.create({
     },
     redoText: {
         color: colors.primary,
-        fontSize: 40,
-        fontFamily: 'BarlowCondensed-SemiBold',
+        fontSize: fontSizes.large,
+        fontFamily: fontFamily.semiBold,
     },
     icons: {
         flexDirection: 'row',

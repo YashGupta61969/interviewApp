@@ -3,12 +3,11 @@ import { ActivityIndicator, View, useWindowDimensions } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { RNCamera } from 'react-native-camera';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import colors from '../constants/colors';
+import { useSelector, useDispatch } from 'react-redux';
 import Welcome from '../screens/Welcome';
 import Camera from '../screens/Camera';
 import { updateIsCompleted } from '../store/slices/userSlice';
+import { colors } from '../constants/constants';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -46,7 +45,6 @@ const TabBarNavigation = ({ route }) => {
             ref={ref}
             style={{ width, height, overflow: 'hidden' }}
             type={isSolo ? 'front' : 'back'}>
-
             <Tab.Navigator backBehavior='none' screenOptions={{
                 tabBarStyle: { display: 'none' },
                 swipeEnabled: !isCompleted,

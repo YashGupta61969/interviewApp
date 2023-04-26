@@ -1,16 +1,16 @@
 import { StyleSheet, Text, View, useWindowDimensions, BackHandler } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import colors from '../constants/colors'
 import { useDispatch, useSelector } from 'react-redux'
 import { RNCamera } from 'react-native-camera'
 import BackgroundService from 'react-native-background-actions';
 import { clearRetries, clearVideoFiles, updateIsCompleted } from '../store/slices/userSlice'
+import { colors, fontFamily, fontSizes } from '../constants/constants'
 
 const UploadScreen = ({ route }) => {
 
     const dispatch = useDispatch()
     const { documentId } = route.params;
-    const { videoFiles, retries, isColorful } = useSelector(state => state.user)
+    const { videoFiles, retries } = useSelector(state => state.user)
     const [message, setMessage] = useState('Your Video Is Being Uploaded in Background')
     const [uploaded, setUploaded] = useState(false)
     const { height, width } = useWindowDimensions()
@@ -58,7 +58,6 @@ const UploadScreen = ({ route }) => {
             const retryForm = new FormData()
             
             form.append('documentId', documentId)
-            form.append('isColorful', isColorful ? 'yes' : 'no')
             retryForm.append('documentId', documentId)
             retries.forEach((vid) => {
                 retryForm.append('video', {
@@ -134,8 +133,8 @@ const styles = StyleSheet.create({
     },
     text: {
         color: 'white',
-        fontSize: 55,
-        fontFamily: 'BarlowCondensed-SemiBold',
+        fontSize: fontSizes.extraLarge,
+        fontFamily: fontFamily.semiBold,
         textAlign: 'center',
         letterSpacing: 2,
         textShadowColor: colors.primary,
@@ -144,8 +143,8 @@ const styles = StyleSheet.create({
         marginBottom: 3
     },
     subText: {
-        fontSize: 25,
-        fontFamily: 'BarlowCondensed-Regular',
+        fontSize: fontSizes.small,
+        fontFamily: fontFamily.regular,
         marginBottom: 20,
     }
 })
