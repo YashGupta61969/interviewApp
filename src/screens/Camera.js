@@ -12,8 +12,8 @@ import { colors, fontFamily, fontSizes } from '../constants/constants';
 const Camera = forwardRef(({ route, navigation, question, isLastIndex }, ref) => {
     const redoRef = useRef(false)
     const swipeRef = useRef();
-    const positionRef = useRef(new Animated.Value(0))
-    const fontSize = useRef(new Animated.Value(45))
+    const [centerTextRef] = useState(new Animated.Value(1));
+    const [bottomTextRef] = useState(new Animated.Value(0));
     const { width, height } = useWindowDimensions();
     const { link } = route.params;
     const isFocused = useIsFocused();
@@ -21,7 +21,6 @@ const Camera = forwardRef(({ route, navigation, question, isLastIndex }, ref) =>
     const dispatch = useDispatch()
 
     const [redoModalVisible, setRedoModalVisible] = useState(false)
-    const [animatedViewHeight, setAnimatedViewHeight] = useState(0)
     const currentQuestionId = +route.name.split(' ')[1]
 
     // Disable Back Press
@@ -37,35 +36,26 @@ const Camera = forwardRef(({ route, navigation, question, isLastIndex }, ref) =>
 
     // Starts Animations
     useEffect(() => {
-        positionRef.current.setValue(0)
-        fontSize.current.setValue(50)
-
         // Text Animations
-        Animated.timing(positionRef.current, {
-            toValue: 1,
-            duration: 1500,
+        isFocused && Animated.timing(centerTextRef, {
+            toValue: 0,
+            duration: 800,
             delay: 2500,
             useNativeDriver: true,
         }).start()
 
-        Animated.timing(fontSize.current, {
-            toValue: 26,
-            duration: 1500,
+        isFocused && Animated.timing(bottomTextRef, {
+            toValue: 1,
+            duration: 800,
             delay: 2500,
-            useNativeDriver: false,
+            useNativeDriver: true,
         }).start()
     }, [isFocused, redoModalVisible]);
 
     // Starts Recording After a second
     useEffect(() => {
-        isFocused && setTimeout(() => startRecording(), 1000)
+        isFocused && setTimeout(() => startRecording(), 20)
     }, [isFocused])
-
-    // Translates Question Text From Center to Bottom With Ansimation
-    const translateY = positionRef.current.interpolate({
-        inputRange: [0, 1],
-        outputRange: [(height - animatedViewHeight) / 2, height - animatedViewHeight],
-    });
 
     // Starts Recording Video
     const startRecording = async () => {
@@ -78,14 +68,14 @@ const Camera = forwardRef(({ route, navigation, question, isLastIndex }, ref) =>
                 if (redoRef.current) {
                     redoRef.current = false;
                     dispatch(addRetries({
-                        name: `${question}~4`,
+                        name: `${question}~1`,
                         uri,
                     }))
-                    return setTimeout(startRecording, 1000)
+                    return setTimeout(startRecording, 50)
                 }
 
                 dispatch(addVideoFile({
-                    name: `${question}~2`,
+                    name: `${question}~1`,
                     uri,
                 }))
 
@@ -100,12 +90,6 @@ const Camera = forwardRef(({ route, navigation, question, isLastIndex }, ref) =>
         } catch (error) {
             console.log(error)
         }
-    }
-
-    // Sets height of animated text
-    const onLayout = ({ nativeEvent }) => {
-        const heightOfView = nativeEvent.layout.height
-        setAnimatedViewHeight(heightOfView)
     }
 
     // Listener on Swipe
@@ -128,10 +112,12 @@ const Camera = forwardRef(({ route, navigation, question, isLastIndex }, ref) =>
         >
             <View style={{ width, height }}>
 
-                {/* Animated Text */}
-                {!redoModalVisible && <Animated.View style={[styles.question, { transform: [{ translateY }] }]} onLayout={onLayout}>
-                    <Animated.Text style={[styles.questionText, { fontSize: fontSize.current }]}>{question}</Animated.Text>
-                </Animated.View>}
+                {/*Animated Text */}
+                {!redoModalVisible && <View style={styles.question}>
+                    <View />
+                    <Animated.Text style={[styles.questionText,  { opacity: centerTextRef }]}>{question}</Animated.Text>
+                    <Animated.Text style={[styles.bottomText, { opacity: bottomTextRef }]}>{question}</Animated.Text>
+                </View>}
 
                 {/* Redo Modal */}
                 <Modal
@@ -166,17 +152,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     question: {
-        width: '100%',
-        paddingHorizontal: 8,
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     questionText: {
         color: 'white',
         textAlign: 'center',
         textShadowColor: colors.primary,
-        textShadowOffset: { width: 4, height: 4 },
-        textShadowRadius: 10,
+        textShadowOffset: { width: 2, height: 2 },
+        textShadowRadius: 3,
         zIndex: 8,
         fontFamily: fontFamily.semiBold,
+        fontSize: 45
     },
     modal: {
         backgroundColor: 'rgba(255, 255, 255, 0.4)',
@@ -193,5 +181,19 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginTop: 20,
         width: '30%'
+    },
+    bottomText: {
+        position: 'absolute',
+        bottom: 3,
+        left:0,
+        right:0,
+        color: 'white',
+        textAlign: 'center',
+        textShadowColor: colors.primary,
+        textShadowOffset: { width: 2, height: 2 },
+        textShadowRadius: 5,
+        zIndex: 8,
+        fontFamily: fontFamily.semiBold,
+        fontSize: fontSizes.small,
     }
 });

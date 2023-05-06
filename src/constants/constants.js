@@ -1,17 +1,17 @@
 export const fontFamily = {
-    medium:'BarlowCondensed-Medium',
-    semiBold:'BarlowCondensed-SemiBold',
-    regular:'BarlowCondensed-Regular'
+    medium: 'BarlowCondensed-Medium',
+    semiBold: 'BarlowCondensed-SemiBold',
+    regular: 'BarlowCondensed-Regular'
 }
 
 export const fontSizes = {
-    large:40,
-    extraLarge:55,
-    small:25,
-    extraSmall:20
+    large: 40,
+    extraLarge: 55,
+    small: 26,
+    extraSmall: 20
 }
 
 export const colors = {
-    primary:'rgb(227, 89, 255)',
-    grayText:'#2F4F4F'
+    primary: 'rgb(227, 89, 255)',
+    grayText: '#2F4F4F'
 }
