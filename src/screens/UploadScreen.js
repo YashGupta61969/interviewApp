@@ -138,13 +138,14 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         letterSpacing: 2,
         textShadowColor: colors.primary,
-        textShadowOffset: { width: -3, height: -2 },
-        textShadowRadius: 5,
+        textShadowOffset: { width: 2.4, height: 2.4 },
+        textShadowRadius: 1,
         marginBottom: 3
     },
     subText: {
         fontSize: fontSizes.small,
         fontFamily: fontFamily.regular,
         marginBottom: 20,
+        textShadowOffset: { width: 2, height: 1.2 },
     }
 })

@@ -2,11 +2,19 @@
 
 #import <React/RCTBundleURLProvider.h>
 #import "Orientation.h"
+#import <RNFBDynamicLinksAppDelegateInterceptor.h>
+#import "Orientation.h"
 
 @implementation AppDelegate
 
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
+  return [Orientation getOrientation];
+}
+
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [RNFBDynamicLinksAppDelegateInterceptor sharedInstance];
   self.moduleName = @"interviewApp";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.

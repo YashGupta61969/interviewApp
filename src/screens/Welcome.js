@@ -225,8 +225,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         letterSpacing: 2,
         textShadowColor: colors.primary,
-        textShadowOffset: { width: -3, height: -2 },
-        textShadowRadius: 5,
+        textShadowOffset: { width: 2.4, height: 2.4 },
+        textShadowRadius: 1,
     },
     infoIcon: {
         zIndex: 500,
