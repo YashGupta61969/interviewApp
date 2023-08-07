@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         letterSpacing: 1,
         textShadowColor: colors.primary,
-        textShadowOffset: { width: 2.4, height: 2.4 },
+        textShadowOffset: { width: -3, height: -3,},
         textShadowRadius: 1,
         fontFamily: fontFamily.semiBold,
     },
