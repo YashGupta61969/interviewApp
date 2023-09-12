@@ -114,7 +114,6 @@ const Camera = forwardRef(({ route, navigation, question, isLastIndex }, ref) =>
 
                 {/*Animated Text */}
                 {!redoModalVisible && <View style={styles.question}>
-                    <View />
                     <Animated.Text style={[styles.questionText,  { opacity: centerTextRef }]}>{question}</Animated.Text>
                     <Animated.Text style={[styles.bottomText, { opacity: bottomTextRef }]}>{question}</Animated.Text>
                 </View>}

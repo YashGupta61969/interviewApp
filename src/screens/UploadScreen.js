@@ -5,6 +5,7 @@ import { RNCamera } from 'react-native-camera'
 import BackgroundService from 'react-native-background-actions';
 import { clearRetries, clearVideoFiles, updateIsCompleted } from '../store/slices/userSlice'
 import { colors, fontFamily, fontSizes } from '../constants/constants'
+import { postRetryVideo, postVideo } from '../services/apis';
 
 const UploadScreen = ({ route }) => {
 
@@ -63,7 +64,7 @@ const UploadScreen = ({ route }) => {
                 retryForm.append('video', {
                     uri: vid.uri,
                     type: 'video/mp4',
-                    name: vid.name
+                    name: vid.name.replaceAll('/','₮`').replaceAll('*','₮#').replaceAll('?','₮$').replaceAll('<','₮^').replaceAll('>','₮&').replaceAll('|','₮(')
                 })
             })
 
@@ -71,15 +72,12 @@ const UploadScreen = ({ route }) => {
                 form.append('video', {
                     uri: vid.uri,
                     type: 'video/mp4',
-                    name: vid.name
+                    name: vid.name.replaceAll('/','₮`').replaceAll('*','₮#').replaceAll('?','₮$').replaceAll('<','₮^').replaceAll('>','₮&').replaceAll('|','₮(')
                 })
-            })
+            });
 
-            const requestUrl = 'http://13.127.161.46:8080/';
-            const retryRequestUrl = 'http://13.127.161.46:8080/retry';
-
-            videoFiles.length && await fetchRequest(requestUrl, form);
-            retries.length && await fetchRequest(retryRequestUrl, retryForm);
+            videoFiles.length && await postVideo(form)
+            retries.length && await postRetryVideo(retryForm)
             setMessage('Your Response Is Submitted')
             setUploaded(true)
 
@@ -88,20 +86,6 @@ const UploadScreen = ({ route }) => {
             await BackgroundService.stop();
         } catch (error) {
             setMessage(`Upload function => ${error.message}`)
-        }
-    }
-
-    const fetchRequest = (url, data) => {
-        try {
-            return fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
-                body: data
-            });
-        } catch (error) {
-            setMessage(`Server Error ${error.message}`)
         }
     }
 

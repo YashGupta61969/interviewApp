@@ -28,7 +28,7 @@ const App = () => {
   }
 
   useEffect(() => {
-    Orientation.lockToLandscape();
+    Orientation.lockToLandscapeLeft();
     dynamicLinks().getInitialLink().then(link => {
       if (link && link.url) {
         setLink(link.url)

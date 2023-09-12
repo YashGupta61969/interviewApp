@@ -9,7 +9,7 @@ import { colors, fontFamily, fontSizes } from '../constants/constants';
 const Welcome = ({ route }) => {
     const isFocused = useIsFocused();
     const [opacity] = useState(new Animated.Value(1));
-    const [firstPoldRotate] = useState(new Animated.Value(0));
+    const [firstPoleRotate] = useState(new Animated.Value(0));
     const [secondPoleRotate] = useState(new Animated.Value(0));
     const [firstPoleTranslate] = useState(new Animated.Value(0));
     const [secondPoleTranslate] = useState(new Animated.Value(0));
@@ -56,7 +56,7 @@ const Welcome = ({ route }) => {
         setShowInfo(prev => !prev);
 
         if (!showInfo) {
-            firstPoldRotate.setValue(0)
+            firstPoleRotate.setValue(0)
             secondPoleRotate.setValue(0)
 
             Animated.timing(
@@ -74,7 +74,7 @@ const Welcome = ({ route }) => {
                 useNativeDriver: true,
             }).start();
             Animated.timing(
-                firstPoldRotate, {
+                firstPoleRotate, {
                 toValue: 1,
                 duration: 250,
                 easing: Easing.linear,
@@ -97,7 +97,7 @@ const Welcome = ({ route }) => {
                 }
             ).start();
         } else {
-            firstPoldRotate.setValue(1)
+            firstPoleRotate.setValue(1)
             secondPoleRotate.setValue(1)
 
             Animated.timing(
@@ -116,7 +116,7 @@ const Welcome = ({ route }) => {
             }).start();
 
             Animated.timing(
-                firstPoldRotate, {
+                firstPoleRotate, {
                 toValue: 0,
                 duration: 250,
                 easing: Easing.linear,
@@ -140,7 +140,7 @@ const Welcome = ({ route }) => {
         }
     }
 
-    const firstPoleSpin = firstPoldRotate.interpolate({
+    const firstPoleSpin = firstPoleRotate.interpolate({
         inputRange: [0, 1],
         outputRange: ['0deg', '45deg'],
     });
