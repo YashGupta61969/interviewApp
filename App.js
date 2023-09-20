@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import QRReader from './src/screens/QRReader';
 import dynamicLinks from '@react-native-firebase/dynamic-links';
-import { ActivityIndicator, useWindowDimensions, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import TabBarNavigation from './src/navigators/TabBarNavigation';
@@ -10,12 +9,11 @@ import Orientation from 'react-native-orientation-locker';
 import { Provider } from 'react-redux';
 import store from './src/store/store';
 import UploadScreen from './src/screens/UploadScreen';
+import Loader from './src/components/Loader';
 
 const Stack = createNativeStackNavigator()
 
 const App = () => {
-
-  const { width, height } = useWindowDimensions()
   const [link, setLink] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -43,11 +41,7 @@ const App = () => {
     setLoading(false)
   }, 300)
 
-  if (loading) {
-    return <View style={{ width, height, justifyContent: 'center', alignItems: 'center' }}>
-      <ActivityIndicator size={'large'} />
-    </View>
-  }
+  if (loading) return <Loader />
 
   return <GestureHandlerRootView style={{ flex: 1 }}>
     <Provider store={store}>

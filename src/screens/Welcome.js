@@ -1,10 +1,11 @@
-import { StyleSheet, Text, useWindowDimensions, View, ActivityIndicator, TouchableOpacity, Animated, Easing, PermissionsAndroid } from 'react-native'
+import { StyleSheet, Text, useWindowDimensions, View, TouchableOpacity, Animated, Easing, PermissionsAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import firestore from '@react-native-firebase/firestore';
 import { useIsFocused } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { setIsSolo } from '../store/slices/userSlice';
 import { colors, fontFamily, fontSizes } from '../constants/constants';
+import Loader from '../components/Loader';
 
 const Welcome = ({ route }) => {
     const isFocused = useIsFocused();
@@ -150,20 +151,16 @@ const Welcome = ({ route }) => {
         outputRange: ['0deg', '-45deg'],
     });
 
-    if (loading) {
-        return <View style={{ width, height, justifyContent: 'center', alignItems: 'center' }}>
-            <ActivityIndicator size={'large'} color={colors.primary} />
-        </View>
-    }
+    if (loading) return <Loader />
 
     // Returns Camera Screen Option When Questions Are Available 
     return (
         <>
             <TouchableOpacity style={styles.infoIcon} activeOpacity={1} onPress={startAnimation}>
-                <Animated.View style={[styles.infoIconBar, { top: 0, opacity, transform: [{ translateY: firstPoleTranslate }]}]} />
+                <Animated.View style={[styles.infoIconBar, { top: 0, opacity, transform: [{ translateY: firstPoleTranslate }] }]} />
                 <Animated.View style={[styles.infoIconBar, { top: 11, transform: [{ rotate: firstPoleSpin }] }]} />
                 <Animated.View style={[styles.infoIconBar, { top: 11, transform: [{ rotate: secondPoleSpin }] }]} />
-                <Animated.View style={[styles.infoIconBar, { top: 22, opacity, transform: [{ translateY: secondPoleTranslate }]}]} />
+                <Animated.View style={[styles.infoIconBar, { top: 22, opacity, transform: [{ translateY: secondPoleTranslate }] }]} />
             </TouchableOpacity>
 
             {

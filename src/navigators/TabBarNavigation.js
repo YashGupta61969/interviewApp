@@ -1,5 +1,5 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { ActivityIndicator, View, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import firestore from '@react-native-firebase/firestore';
 import { RNCamera } from 'react-native-camera';
@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Welcome from '../screens/Welcome';
 import Camera from '../screens/Camera';
 import { updateIsCompleted } from '../store/slices/userSlice';
-import { colors } from '../constants/constants';
+import Loader from '../components/Loader';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -34,11 +34,7 @@ const TabBarNavigation = ({ route }) => {
         }).catch(err => console.log(err))
     }, [link])
 
-    if (loading) {
-        return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'black' }}>
-            <ActivityIndicator size={'large'} color={colors.primary} />
-        </View>
-    }
+    if (loading) return <Loader />
 
     return (
         <RNCamera
