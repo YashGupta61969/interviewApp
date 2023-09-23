@@ -4,6 +4,7 @@
 #import "Orientation.h"
 #import <RNFBDynamicLinksAppDelegateInterceptor.h>
 #import "Orientation.h"
+#import <Firebase.h>
 
 @implementation AppDelegate
 
@@ -14,6 +15,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [FIRApp configure];
   [RNFBDynamicLinksAppDelegateInterceptor sharedInstance];
   self.moduleName = @"interviewApp";
   // You can add your custom initial props in the dictionary below.
@@ -40,10 +42,6 @@
 - (BOOL)concurrentRootEnabled
 {
   return true;
-}
-
-- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
-  return [Orientation getOrientation];
 }
 
 @end
