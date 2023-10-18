@@ -11,6 +11,7 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		18C8A0E82AC17C9B00ADECB7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 18C8A0E72AC17C9B00ADECB7 /* GoogleService-Info.plist */; };
 		77AB3ADCBB7A931DBEB65AA2 /* Pods_interviewApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 478B5832078A5E3E81EA2978 /* Pods_interviewApp.framework */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		C776262173424C149A6B9D0F /* BarlowCondensed-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2577175768CA4AB0B623128F /* BarlowCondensed-Regular.ttf */; };
@@ -18,7 +19,6 @@
 		E64C0E3C5CDBE40E1C2128B1 /* Pods_interviewApp_interviewAppTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8517B32C704ACDD47C91B70C /* Pods_interviewApp_interviewAppTests.framework */; };
 		EFD9A8752ABC5488002C22C6 /* BarlowCondensed-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EFD9A8722ABC5485002C22C6 /* BarlowCondensed-Regular.ttf */; };
 		EFD9A8762ABC5488002C22C6 /* BarlowCondensed-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EFD9A8732ABC5486002C22C6 /* BarlowCondensed-Medium.ttf */; };
-		EFD9A87B2ABD7A01002C22C6 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = EFD9A87A2ABD7A00002C22C6 /* GoogleService-Info.plist */; };
 		F3D3EA8E58E94A919DDDF6BA /* BarlowCondensed-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 03DAB1BA841444C9B5C8D57E /* BarlowCondensed-SemiBold.ttf */; };
 /* End PBXBuildFile section */
 
@@ -43,6 +43,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = interviewApp/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = interviewApp/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = interviewApp/main.m; sourceTree = "<group>"; };
+		18C8A0E72AC17C9B00ADECB7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2577175768CA4AB0B623128F /* BarlowCondensed-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BarlowCondensed-Regular.ttf"; path = "../assets/fonts/BarlowCondensed-Regular.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-interviewApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-interviewApp.debug.xcconfig"; path = "Target Support Files/Pods-interviewApp/Pods-interviewApp.debug.xcconfig"; sourceTree = "<group>"; };
 		478B5832078A5E3E81EA2978 /* Pods_interviewApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_interviewApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -56,7 +57,6 @@
 		EFD9A8722ABC5485002C22C6 /* BarlowCondensed-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "BarlowCondensed-Regular.ttf"; path = "../assets/fonts/BarlowCondensed-Regular.ttf"; sourceTree = "<group>"; };
 		EFD9A8732ABC5486002C22C6 /* BarlowCondensed-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "BarlowCondensed-Medium.ttf"; path = "../assets/fonts/BarlowCondensed-Medium.ttf"; sourceTree = "<group>"; };
 		EFD9A8742ABC5487002C22C6 /* BarlowCondensed-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "BarlowCondensed-SemiBold.ttf"; path = "../assets/fonts/BarlowCondensed-SemiBold.ttf"; sourceTree = "<group>"; };
-		EFD9A87A2ABD7A00002C22C6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../GoogleService-Info.plist"; sourceTree = "<group>"; };
 		EFD9A87C2ABDA746002C22C6 /* interviewApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = interviewApp.entitlements; path = interviewApp/interviewApp.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -141,7 +141,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				EFD9A87A2ABD7A00002C22C6 /* GoogleService-Info.plist */,
+				18C8A0E72AC17C9B00ADECB7 /* GoogleService-Info.plist */,
 				EFD9A8732ABC5486002C22C6 /* BarlowCondensed-Medium.ttf */,
 				EFD9A8722ABC5485002C22C6 /* BarlowCondensed-Regular.ttf */,
 				EFD9A8742ABC5487002C22C6 /* BarlowCondensed-SemiBold.ttf */,
@@ -274,7 +274,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EFD9A8752ABC5488002C22C6 /* BarlowCondensed-Regular.ttf in Resources */,
-				EFD9A87B2ABD7A01002C22C6 /* GoogleService-Info.plist in Resources */,
+				18C8A0E82AC17C9B00ADECB7 /* GoogleService-Info.plist in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				EFD9A8762ABC5488002C22C6 /* BarlowCondensed-Medium.ttf in Resources */,
@@ -305,7 +305,7 @@
 		};
 		00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (
@@ -538,7 +538,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = interviewApp/interviewApp.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = UWRSNR38MG;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = interviewApp/Info.plist;
@@ -548,14 +548,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.IssueInc.IssuePlusApps;
-				PRODUCT_NAME = interviewApp;
+				PRODUCT_NAME = ISSUE +;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -569,7 +569,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = interviewApp/interviewApp.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = UWRSNR38MG;
 				INFOPLIST_FILE = interviewApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "ISSUE +";
@@ -578,14 +578,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.IssueInc.IssuePlusApps;
-				PRODUCT_NAME = interviewApp;
+				PRODUCT_NAME = ISSUE +;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

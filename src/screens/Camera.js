@@ -1,4 +1,4 @@
-import { StyleSheet, useWindowDimensions, Animated, View, Modal, Text, BackHandler } from 'react-native'
+import { StyleSheet, useWindowDimensions, Animated, View, Modal, Text, BackHandler, Platform } from 'react-native'
 import React, { useState, useRef, useEffect, forwardRef } from 'react'
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
 import { useIsFocused } from '@react-navigation/native';
@@ -61,7 +61,7 @@ const Camera = forwardRef(({ route, navigation, question, isLastIndex }, ref) =>
     const startRecording = async () => {
         try {
             const { uri } = await ref.current.recordAsync({
-                orientation: "landscapeLeft",
+                orientation: Platform.OS === 'android' ? "landscapeLeft" : "landscapeRight",
                 quality: RNCamera.Constants.VideoQuality['720p']
             });
             if (uri) {

@@ -12,6 +12,10 @@
     </array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	  <key>BGTaskSchedulerPermittedIdentifiers</key>
+  <array>
+      <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+  </array>
 	<key>CFBundleDisplayName</key>
 	<string>ISSUE +</string>
 	<key>CFBundleExecutable</key>
@@ -59,11 +63,11 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs access to your Camera.</string>
+	<string>$(PRODUCT_NAME) needs access to your camera for recording the response for the interview questions</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs access to your Microphone.</string>
+	<string>$(PRODUCT_NAME) needs access to your Microphone for recording the response for the interview questions.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>BarlowCondensed-Medium.ttf</string>
