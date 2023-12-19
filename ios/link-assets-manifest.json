@@ -2,18 +2,6 @@
   "migIndex": 1,
   "data": [
     {
-      "path": "assets/fonts/BarlowCondensed-Black.ttf",
-      "sha1": "ca766f76ce5a40120b6e7d0e2f0d534699f57bb8"
-    },
-    {
-      "path": "assets/fonts/BarlowCondensed-Bold.ttf",
-      "sha1": "6262bcb13860d998f4f0ef6f24955015ba5c9fc8"
-    },
-    {
-      "path": "assets/fonts/BarlowCondensed-ExtraBold.ttf",
-      "sha1": "ad26fc581156fee4f83113df5189016ac72a484b"
-    },
-    {
       "path": "assets/fonts/BarlowCondensed-Medium.ttf",
       "sha1": "97ca26fcb390d83da8a008d5bf085fd1277d4999"
     },

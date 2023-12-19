@@ -1,4 +1,4 @@
-import { StyleSheet, Text, useWindowDimensions, View, TouchableOpacity, Animated, Easing, PermissionsAndroid } from 'react-native'
+import { StyleSheet, Text, useWindowDimensions, View, TouchableOpacity, Animated, Easing, PermissionsAndroid, Platform } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import firestore from '@react-native-firebase/firestore';
 import { useIsFocused } from '@react-navigation/native';
@@ -41,7 +41,7 @@ const Welcome = ({ route }) => {
                     setAreQuestionsAvailable(true)
                 }
             }).catch(err => console.log(err)).finally(() => setLoading(false))
-            requestPermission()
+           Platform.OS === 'android' && requestPermission()
         }
     }, [isFocused, link]);
 
