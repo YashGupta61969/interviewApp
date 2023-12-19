@@ -24,7 +24,7 @@ const UploadScreen = ({ route }) => {
             name: 'ic_launcher',
             type: 'mipmap',
         },
-        linkingURI: 'https://interviewapptestyash.page.link/',
+        linkingURI: 'interviewappissueplus.page.link/',
         color: '#ff00ff',
         parameters: {
             delay: 500,
